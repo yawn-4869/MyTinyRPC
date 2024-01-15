@@ -2,6 +2,7 @@
 #define MYTINYRPC_COMMON_LOG_H
 
 #include <string>
+#include <queue>
 
 namespace MyTinyRPC {
 
@@ -13,10 +14,16 @@ std::string formatString(const char* str, Args&&... args) {
     if(size > 0) {
         // 手动调整缓冲区的大小
         result.resize(size);
-        snprintf(&result[0], size+1, str, args);
+        snprintf(&result[0], size+1, str, args...);
     }
     return result;
 }
+
+#define DEBUGLOG(str, ...) \
+    std::string msg = (new MyTinyRPC::LogEvent(MyTinyRPC::LogLevel::DEBUG))->toString() + MyTinyRPC::formatString(str, ##__VA_ARGS__); \
+    msg += "\n"; \
+    MyTinyRPC::Logger::getGlobalLogger()->pushLog(msg); \
+    MyTinyRPC::Logger::getGlobalLogger()->log(); \
 
 
 enum LogLevel {
@@ -28,15 +35,21 @@ std::string LogLevelToString(LogLevel level);
 LogLevel StringToLogLevel(std::string& log_level);
 
 class Logger {
+public: 
+    void pushLog(const std::string msg);
+    void log(); // 实现日志打印的方法
+
 public:
-    void log(LogEvent event); // 实现日志打印的方法
+    static Logger* getGlobalLogger();
 
 private:
     LogLevel m_set_level; // 设置的日志级别，高于日志级别才打印
+    std::queue<std::string> m_buffer;
 };
 
 class LogEvent {
 public:
+    LogEvent(LogLevel level) : m_level(level){}
     std::string getFileName() const {
         return m_file_name;
     }

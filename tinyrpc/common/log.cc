@@ -5,6 +5,28 @@
 
 namespace MyTinyRPC {
 
+static Logger* g_logger = NULL;
+
+Logger* Logger::getGlobalLogger() {
+    if(g_logger) {
+        return g_logger;
+    }
+    g_logger = new Logger();
+    return g_logger;
+}
+
+void Logger::pushLog(const std::string msg) {
+    m_buffer.push(msg);
+}
+
+void Logger::log() {
+    while(!m_buffer.empty()) {
+        std::string msg = m_buffer.front();
+        m_buffer.pop();
+        printf(msg.c_str());
+    }
+}
+
 std::string LogLevelToString(LogLevel level) {
     switch (level)
     {
@@ -17,13 +39,6 @@ std::string LogLevelToString(LogLevel level) {
     default:
         return "UNKNOWN";
     }
-}
-
-void Logger::log(LogEvent event) {
-    if(event.getLogLevel() < m_set_level) {
-        return;
-    }
-    
 }
 
 std::string LogEvent::toString() {
@@ -46,7 +61,8 @@ std::string LogEvent::toString() {
     std::stringstream ss;
     ss << "[" << LogLevelToString(m_level) << "]\t" 
         << "[" << time_str << "]\t"
-        << "[" << m_pid << ":" << m_tid << "]\t";
+        << "[" << m_pid << ":" << m_tid << "]\t"
+        << "[" << std::string(__FILE__) << ":" << __LINE__ << "]\t";
 
     // TODO: 请求信息的id
     
