@@ -3,6 +3,7 @@
 
 #include <string>
 #include <queue>
+#include "locker.h"
 
 namespace MyTinyRPC {
 
@@ -20,13 +21,32 @@ std::string formatString(const char* str, Args&&... args) {
 }
 
 #define DEBUGLOG(str, ...) \
-    std::string msg = (new MyTinyRPC::LogEvent(MyTinyRPC::LogLevel::DEBUG))->toString() + MyTinyRPC::formatString(str, ##__VA_ARGS__); \
-    msg += "\n"; \
-    MyTinyRPC::Logger::getGlobalLogger()->pushLog(msg); \
+    if(MyTinyRPC::Logger::getGlobalLogger()->getLogLevel() && MyTinyRPC::Logger::getGlobalLogger()->getLogLevel() <= MyTinyRPC::DEBUG){ \
+    MyTinyRPC::Logger::getGlobalLogger()->pushLog((new MyTinyRPC::LogEvent(MyTinyRPC::LogLevel::DEBUG))->toString() \
+    + "[" + std::string(__FILE__) + ":" + std::to_string(__LINE__) + "]\t" \
+    + MyTinyRPC::formatString(str, ##__VA_ARGS__) + "\n"); \
     MyTinyRPC::Logger::getGlobalLogger()->log(); \
+    } \
+
+#define INFOLOG(str, ...) \
+    if(MyTinyRPC::Logger::getGlobalLogger()->getLogLevel() && MyTinyRPC::Logger::getGlobalLogger()->getLogLevel() <= MyTinyRPC::INFO) { \
+    MyTinyRPC::Logger::getGlobalLogger()->pushLog((new MyTinyRPC::LogEvent(MyTinyRPC::LogLevel::INFO))->toString() \
+    + "[" + std::string(__FILE__) + ":" + std::to_string(__LINE__) + "]\t" \
+    + MyTinyRPC::formatString(str, ##__VA_ARGS__) + "\n"); \
+    MyTinyRPC::Logger::getGlobalLogger()->log(); \
+    } \
+
+#define ERRORLOG(str, ...) \
+    if(MyTinyRPC::Logger::getGlobalLogger()->getLogLevel() && MyTinyRPC::Logger::getGlobalLogger()->getLogLevel() <= MyTinyRPC::ERROR) { \
+    MyTinyRPC::Logger::getGlobalLogger()->pushLog((new MyTinyRPC::LogEvent(MyTinyRPC::LogLevel::ERROR))->toString() \
+    + "[" + std::string(__FILE__) + ":" + std::to_string(__LINE__) + "]\t" \
+    + MyTinyRPC::formatString(str, ##__VA_ARGS__) + "\n"); \
+    MyTinyRPC::Logger::getGlobalLogger()->log(); \
+    } \
 
 
 enum LogLevel {
+    UNKNOWN = 0,
     DEBUG = 1,
     INFO = 2,
     ERROR = 3
@@ -36,15 +56,21 @@ LogLevel StringToLogLevel(std::string& log_level);
 
 class Logger {
 public: 
+    Logger(LogLevel level) : m_set_level(level){}
+    LogLevel getLogLevel() {
+        return m_set_level;
+    }
     void pushLog(const std::string msg);
     void log(); // 实现日志打印的方法
 
 public:
     static Logger* getGlobalLogger();
+    static void InitGlobalLogger();
 
 private:
     LogLevel m_set_level; // 设置的日志级别，高于日志级别才打印
-    std::queue<std::string> m_buffer;
+    std::queue<std::string> m_buffer; // 日志缓冲队列
+    Mutex m_mutex; // 日志缓冲队列的互斥锁
 };
 
 class LogEvent {
