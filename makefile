@@ -33,21 +33,23 @@ CXXFLAGS += -g -O0 -std=c++11 -Wall -Wno-deprecated -Wno-unused-but-set-variable
 
 CXXFLAGS += -I./ -I$(PATH_TINYRPC)	-I$(PATH_COMM) -I$(PATH_NET)
 
-LIBS += /usr/lib/libprotobuf.a	/usr/lib/libtinyxml.a
+LIBS += /usr/lib/libtinyxml.a
 
 
 COMM_OBJ := $(patsubst $(PATH_COMM)/%.cc, $(PATH_OBJ)/%.o, $(wildcard $(PATH_COMM)/*.cc))
 NET_OBJ := $(patsubst $(PATH_NET)/%.cc, $(PATH_OBJ)/%.o, $(wildcard $(PATH_NET)/*.cc))
 
-ALL_TESTS : $(PATH_BIN)/test_log
-# ALL_TESTS : $(PATH_BIN)/test_log
+ALL_TESTS : $(PATH_BIN)/test_log $(PATH_BIN)/test_eventloop 
 
-TEST_CASE_OUT := $(PATH_BIN)/test_log
+TEST_CASE_OUT := $(PATH_BIN)/test_log $(PATH_BIN)/test_eventloop 
 
 LIB_OUT := $(PATH_LIB)/libtinyrpc.a
 
 $(PATH_BIN)/test_log: $(LIB_OUT)
 	$(CXX) $(CXXFLAGS) $(PATH_TESTCASES)/test_log.cc -o $@ $(LIB_OUT) $(LIBS) -ldl -pthread
+
+$(PATH_BIN)/test_eventloop: $(LIB_OUT)
+	$(CXX) $(CXXFLAGS) $(PATH_TESTCASES)/test_eventloop.cc -o $@ $(LIB_OUT) $(LIBS) -ldl -pthread
 
 $(LIB_OUT): $(COMM_OBJ) $(NET_OBJ)
 	cd $(PATH_OBJ) && ar rcv libtinyrpc.a *.o && cp libtinyrpc.a ../lib/
