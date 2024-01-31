@@ -52,6 +52,7 @@ EventLoop::EventLoop() {
         exit(0);
     }
     initWakeUpFdEevent();
+    initTimer();
 
     INFOLOG("success created event loop in thread %d", m_thread_id);
     t_current_event_loop = this;
@@ -82,6 +83,9 @@ void EventLoop::loop() {
 
         // 开始epoll调用
         // TODO: time_out应该是设定值与下次定时任务事件之中的最大值，目前定时任务类还没写，故先初始化为设定值
+        // 如果有定时任务，那么执行
+        // 1. 如何判断定时任务需要执行：(now() > TimerEvent.arrive_time)
+        // 2. arrive_time 如何让eventloop监听
         int time_out = g_epoll_max_timeout;
         epoll_event result_events[g_epoll_max_events];
         int rt = epoll_wait(m_epoll_fd, result_events, g_epoll_max_events, time_out);
@@ -128,6 +132,10 @@ void EventLoop::addEpollEvent(FdEvent* event) {
     }
 }
 
+void EventLoop::addTimerEvent(TimeEvent::s_ptr event) {
+    m_timer->addTimeEvent(event);
+}
+
 void EventLoop::deleteEpollEvent(FdEvent* event) {
     if(isInLoopThread()) {
         DEL_FROM_EPOLL();
@@ -171,6 +179,11 @@ void EventLoop::initWakeUpFdEevent() {
         DEBUGLOG("read full bytes from wakeup fd[%d]", m_wakeup_fd);
     });
     addEpollEvent(m_wakeup_fd_event);
+}
+
+void EventLoop::initTimer() {
+    m_timer = new Timer();
+    addEpollEvent(m_timer);
 }
 
 }

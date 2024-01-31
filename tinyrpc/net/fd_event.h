@@ -13,6 +13,7 @@ public:
     };
 
     FdEvent(int fd);
+    FdEvent();
     ~FdEvent();
     std::function<void()> handler(TriggerEvent event_type);
     void listen(TriggerEvent event_type, std::function<void()> callback);

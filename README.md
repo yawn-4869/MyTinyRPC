@@ -89,3 +89,23 @@ void EventLoop::addEpollEvent(FdEvent* event) {
     }
 }
 ```
+
+### 定时器 20240126
+#### 定时任务 TimerEvent
+类成员变量包含：
+```
+1. arrive_time 指定时间，通过该变量来判定定时任务是否超时 ms
+2. interval 定时时间 ms
+3. is_repeated 是否为周期性任务，需要重复执行
+4. is_canceled 任务取消标志
+5. task 回调函数
+```
+类成员函数包含：
+```
+cancel()
+cancelRepeated()
+```
+#### 定时器 Timer
+定时任务的集合，用于管理定时任务
+
+为了在eventloop监听Timer事件, Timer需要继承FdEvent

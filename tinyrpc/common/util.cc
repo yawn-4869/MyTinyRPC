@@ -1,5 +1,6 @@
 #include "util.h"
 #include <sys/syscall.h>
+#include <sys/time.h>
 
 
 namespace MyTinyRPC {
@@ -21,6 +22,12 @@ pid_t getThreadId() {
         return t_thread_id;
     }
     return syscall(SYS_gettid);
+}
+
+int64_t getNowMs() {
+    timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec * 1000 + tv.tv_usec / 1000;
 }
 
 }

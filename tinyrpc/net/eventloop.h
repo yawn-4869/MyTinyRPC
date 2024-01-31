@@ -8,6 +8,7 @@
 #include "tinyrpc/common/locker.h"
 #include "tinyrpc/net/fd_event.h"
 #include "tinyrpc/net/wakeup_fd_event.h"
+#include "tinyrpc/net/timer.h"
 
 namespace MyTinyRPC {
 
@@ -22,6 +23,7 @@ public:
     void wakeup();
     void stop();
     void addEpollEvent(FdEvent* event);
+    void addTimerEvent(TimeEvent::s_ptr event);
     void deleteEpollEvent(FdEvent* event);
 
 private:
@@ -29,6 +31,7 @@ private:
     bool isInLoopThread();
     void addTask(std::function<void()> callback, bool is_wake_up = false);
     void initWakeUpFdEevent();
+    void initTimer();
 
 private:
     pid_t m_thread_id{ 0 }; // 线程id
@@ -39,6 +42,7 @@ private:
     Mutex m_mutex; // 互斥锁
     WakeUpFdEvent* m_wakeup_fd_event{ NULL }; // 唤醒通知事件
     int m_wakeup_fd{ 0 };
+    Timer* m_timer;
 };
 
 }

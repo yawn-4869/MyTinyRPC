@@ -51,6 +51,15 @@ int main() {
 
     });
     eventloop->addEpollEvent(&event);
+
+    int i = 0;
+    MyTinyRPC::TimeEvent::s_ptr timer_event = std::make_shared<MyTinyRPC::TimeEvent>(
+        5000, true, [&i]() {
+            INFOLOG("trigger timer event, count=%d", i++);
+        }
+    );
+
+    eventloop->addTimerEvent(timer_event);
     eventloop->loop();
 
     return 0;
