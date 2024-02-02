@@ -15,6 +15,7 @@ namespace MyTinyRPC {
 class EventLoop
 {
 public:
+    typedef std::shared_ptr<EventLoop> s_ptr;
     EventLoop();
     ~EventLoop();
 

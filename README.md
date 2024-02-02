@@ -73,6 +73,7 @@ void loop() {
 ```
 
 由于本项目使用的是主从Reactor模型，因此会存在跨线程的IO操作，从而引发线程安全问题
+
 以下代码提供了因跨线程IO操作引发的线程安全问题的避免方法
 ```c++
 void EventLoop::addEpollEvent(FdEvent* event) {
@@ -109,3 +110,16 @@ cancelRepeated()
 定时任务的集合，用于管理定时任务
 
 为了在eventloop监听Timer事件, Timer需要继承FdEvent
+
+#### IO线程封装 20240131
+创建一个io线程，他会帮我们执行: 
+1. 创建一个新线程
+2. 在新线程中创建一个EventLoop,完成初始化
+3. 开启loop
+```
+class {
+    pthread_t m_thread;
+    pid_t m_thread_id;
+    EventLoop event_loop;
+}
+```
