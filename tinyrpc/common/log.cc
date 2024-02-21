@@ -19,22 +19,23 @@ void Logger::InitGlobalLogger() {
 }
 
 void Logger::pushLog(const std::string msg) {
-    m_buffer.push(msg);
+    // m_buffer.push(msg);
+    printf(msg.c_str());
 }
 
 void Logger::log() {
-    std::queue<std::string> tmp;
-    ScopeLocker<Mutex> locker(m_mutex);
-    m_buffer.swap(tmp);
-    locker.unlock();
+    // std::queue<std::string> tmp;
+    // ScopeLocker<Mutex> locker(m_mutex);
+    // m_buffer.swap(tmp);
+    // locker.unlock();
 
-    while(!tmp.empty()) {
-        std::string msg = tmp.front();
-        tmp.pop();
+    // while(!tmp.empty()) {
+    //     std::string msg = tmp.front();
+    //     tmp.pop();
 
-        // TODO: 输出到终端要改为输出到日志文件
-        printf(msg.c_str());
-    }
+    //     // TODO: 输出到终端要改为输出到日志文件
+    //     printf(msg.c_str());
+    // }
 }
 
 std::string LogLevelToString(LogLevel level) {

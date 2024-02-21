@@ -25,7 +25,6 @@ std::string formatString(const char* str, Args&&... args) {
     MyTinyRPC::Logger::getGlobalLogger()->pushLog((new MyTinyRPC::LogEvent(MyTinyRPC::LogLevel::DEBUG))->toString() \
     + "[" + std::string(__FILE__) + ":" + std::to_string(__LINE__) + "]\t" \
     + MyTinyRPC::formatString(str, ##__VA_ARGS__) + "\n"); \
-    MyTinyRPC::Logger::getGlobalLogger()->log(); \
     } \
 
 #define INFOLOG(str, ...) \
@@ -33,7 +32,6 @@ std::string formatString(const char* str, Args&&... args) {
     MyTinyRPC::Logger::getGlobalLogger()->pushLog((new MyTinyRPC::LogEvent(MyTinyRPC::LogLevel::INFO))->toString() \
     + "[" + std::string(__FILE__) + ":" + std::to_string(__LINE__) + "]\t" \
     + MyTinyRPC::formatString(str, ##__VA_ARGS__) + "\n"); \
-    MyTinyRPC::Logger::getGlobalLogger()->log(); \
     } \
 
 #define ERRORLOG(str, ...) \
@@ -41,7 +39,6 @@ std::string formatString(const char* str, Args&&... args) {
     MyTinyRPC::Logger::getGlobalLogger()->pushLog((new MyTinyRPC::LogEvent(MyTinyRPC::LogLevel::ERROR))->toString() \
     + "[" + std::string(__FILE__) + ":" + std::to_string(__LINE__) + "]\t" \
     + MyTinyRPC::formatString(str, ##__VA_ARGS__) + "\n"); \
-    MyTinyRPC::Logger::getGlobalLogger()->log(); \
     } \
 
 
