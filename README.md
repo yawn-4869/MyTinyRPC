@@ -146,6 +146,22 @@ TCPBuffer实现
 简单起见使用双指针数组实现
 
 左指针：readIndex指向要读取的位置
-
 右指针：writeIndex指向要写入的位置
+
+提供的方法：
+public:
+可读、可写、写入、读取、buffer扩容、向右移动读指针、向右移动写指针
+private:
+为防止内存泄漏, 提供了将可读内容移动到buffer最左端的方法
+
+成员变量:
+m_size, m_buffer, m_read_idx, m_write_idx
 ```
+
+#### TCPAcceptor设计 20240222
+将主要流程进行简单的封装：
+
+socket => bind => listen => accept
+
+使用了自己封装的net_addr类来代替linux系统的sockaddr, 以自定义更多的功能, 并将其作为TCPAcceptor的地址类
+
