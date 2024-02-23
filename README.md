@@ -159,7 +159,7 @@ m_size, m_buffer, m_read_idx, m_write_idx
 ```
 
 #### TCPAcceptor设计 20240222
-将主要流程进行简单的封装：
+将socket通信的主要流程进行简单的封装：
 
 socket => bind => listen => accept
 

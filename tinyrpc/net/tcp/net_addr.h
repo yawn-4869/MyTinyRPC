@@ -26,6 +26,8 @@ public:
 class IPNetAddr : public NetAddr {
 
 public:
+    typedef std::shared_ptr<IPNetAddr> s_ptr;
+
     IPNetAddr(const std::string &ip, int16_t port);
     
     IPNetAddr(const std::string &addr);
