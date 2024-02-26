@@ -16,11 +16,28 @@ void Logger::InitGlobalLogger() {
     std::string global_log_level = Config::GetGloabalConfig()->getGlobalLogLevel();
     printf("Init log level [%s]\n", global_log_level.c_str());
     g_logger = new Logger(StringToLogLevel(global_log_level));
+    g_logger->init();
+}
+
+Logger::Logger(LogLevel level) : m_set_level(level){
+                      
+}
+
+void Logger::init() {
+    m_async_logger = std::make_shared<AsyncLogger>(Config::GetGloabalConfig()->m_log_file_name, 
+                                                    Config::GetGloabalConfig()->m_log_file_path,
+                                                    Config::GetGloabalConfig()->m_log_max_file_size);
+    m_time_event = std::make_shared<TimeEvent>(Config::GetGloabalConfig()->m_async_log_interval, true, 
+                                                std::bind(&Logger::asyncLoop, this));   
+    EventLoop::GetCurrentEventLoop()->addTimerEvent(m_time_event);
 }
 
 void Logger::pushLog(const std::string msg) {
     // m_buffer.push(msg);
-    printf(msg.c_str());
+    // printf(msg.c_str());
+    ScopeLocker<Mutex> lck(m_mutex);
+    m_buffer.push_back(msg);
+    lck.unlock();
 }
 
 void Logger::log() {
@@ -36,6 +53,19 @@ void Logger::log() {
     //     // TODO: 输出到终端要改为输出到日志文件
     //     printf(msg.c_str());
     // }
+}
+
+void Logger::asyncLoop() {
+    // 同步m_buffer到async_logger的buffer队尾
+    std::vector<std::string> tmp;
+    ScopeLocker<Mutex> lck(m_mutex);
+    tmp.swap(m_buffer);
+    lck.unlock();
+
+    if(tmp.empty()) {
+        return;
+    }
+    m_async_logger->pushLogBuffer(tmp);
 }
 
 std::string LogLevelToString(LogLevel level) {
@@ -61,6 +91,106 @@ LogLevel StringToLogLevel(std::string& log_level) {
         return LogLevel::ERROR;
     }
     return LogLevel::UNKNOWN;
+}
+
+AsyncLogger::AsyncLogger(std::string file_name, std::string file_path, int max_size)
+    : m_file_name(file_name), m_file_path(file_path), m_max_file_size(max_size) {
+    sem_init(&m_semaphore, 0, 0);
+    pthread_create(&m_thread, NULL, &AsyncLogger::loop, this);
+    sem_wait(&m_semaphore);
+}
+
+AsyncLogger::~AsyncLogger() {
+
+}
+
+void* AsyncLogger::loop(void* arg) {
+    // 定时将buffer中的全部数据打印到文件中, 然后线程睡眠, 直到定时任务再次唤醒
+    AsyncLogger* async_logger = reinterpret_cast<AsyncLogger*>(arg);
+    pthread_cond_init(&async_logger->m_conditon, NULL);
+    sem_post(&async_logger->m_semaphore);
+
+    while(1) {
+        ScopeLocker<Mutex> lck(async_logger->m_mutex);
+        while(async_logger->m_buffer.empty()) {
+            // 等待缓冲区内有数据
+            pthread_cond_wait(&async_logger->m_conditon, async_logger->m_mutex.getMutex());
+        }
+        // 为解决缓冲区读出与写入速度不匹配的问题
+        // 即有可能在缓冲区内的内容还未全部写入到日志文件时, 又有新的数据要写入到缓冲区
+        // 因此使用队列作为缓冲区的数据结构, 每次只读取队首的数据
+        std::vector<std::string> tmp = async_logger->m_buffer.front();
+        async_logger->m_buffer.pop();
+        lck.unlock();
+
+        // 获取当前日期
+        time_t now;
+        time(&now);
+        struct tm now_time;
+        localtime_r(&now, &now_time);
+        char date[32];
+        strftime(date, 32, "%Y%m%d", &now_time);
+
+        // 判断日志文件是否需要重新被打开: 更换日期?超出大小?文件打开失败?
+        if(std::string(date) != async_logger->m_date || 
+        ftell(async_logger->m_file_handler) > async_logger->m_max_file_size ||
+        async_logger->m_file_handler == NULL) {
+            async_logger->m_reopen_flag = true;
+            if(std::string(date) != async_logger->m_date) {
+                async_logger->m_no = 0;
+                async_logger->m_date = std::string(date);
+            }
+
+            if(ftell(async_logger->m_file_handler) > async_logger->m_max_file_size) {
+                async_logger->m_no++;
+            }
+        }
+
+        std::stringstream ss;
+        ss << async_logger->m_file_path << async_logger->m_file_name << "_"
+        << async_logger->m_date << "_log" << "_" << std::to_string(async_logger->m_no);
+        
+        std::string log_file_name = ss.str();
+        
+        if(async_logger->m_reopen_flag) {
+            if(async_logger->m_file_handler) {
+                fclose(async_logger->m_file_handler);
+            }
+            async_logger->m_file_handler = fopen(log_file_name.c_str(), "a");
+            async_logger->m_reopen_flag = false;
+        }
+
+        // 写入日志文件
+        for(auto &msg : tmp) {
+            fwrite(msg.c_str(), 1, msg.length(), async_logger->m_file_handler);
+        }
+        fflush(async_logger->m_file_handler);
+
+        // 输出完毕后判断是否需要停止
+        if(async_logger->m_stop_flag) {
+            break;
+        }
+    }
+    return NULL;
+}
+
+void AsyncLogger::pushLogBuffer(std::vector<std::string> &vec) {
+    ScopeLocker<Mutex> lck(m_mutex);
+    m_buffer.push(vec);
+    lck.unlock();
+
+    // 唤醒线程
+    pthread_cond_signal(&m_conditon);
+}
+
+void AsyncLogger::stop() {
+    m_stop_flag = true;
+}
+
+void AsyncLogger::flush() {
+    if(m_file_handler) {
+        fflush(m_file_handler);
+    }
 }
 
 std::string LogEvent::toString() {

@@ -27,6 +27,9 @@ public:
     void addTimerEvent(TimeEvent::s_ptr event);
     void deleteEpollEvent(FdEvent* event);
 
+public:
+    static EventLoop* GetCurrentEventLoop();
+
 private:
     void dealWakeup();
     bool isInLoopThread();

@@ -146,6 +146,15 @@ void EventLoop::deleteEpollEvent(FdEvent* event) {
         addTask(cb, true);
     }
 }
+
+EventLoop* EventLoop::GetCurrentEventLoop() {
+  if (t_current_event_loop) {
+    return t_current_event_loop;
+  }
+  t_current_event_loop = new EventLoop();
+  return t_current_event_loop;
+}
+
 void EventLoop::dealWakeup() {
 
 }

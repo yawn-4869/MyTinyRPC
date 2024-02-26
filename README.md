@@ -1,5 +1,5 @@
-### 日志模块开发 20240111-20240115
-
+### 日志模块开发
+#### 同步日志开发（输出到终端） 20240111-20240115
 日志模块
 ```
 1. 日志级别: DEBUG INFO ERR
@@ -39,6 +39,16 @@ Logger 日志器
 ```
 1. 提供打印日志的方法
 2. 设置打印日志的路径（目前为printf输出到控制台，需要完善成输出到指定文件）
+```
+
+#### 更新异步日志 20240223
+添加异步日志类AsyncLogger，输出到文件
+
+实现思路：
+```
+设置异步日志定时任务，每隔一定时间读取一次缓冲区内的数据
+
+读取完毕后启动额外的日志线程来输出到指定文件
 ```
 
 ### 配置模块开发 20240115
@@ -164,4 +174,16 @@ m_size, m_buffer, m_read_idx, m_write_idx
 socket => bind => listen => accept
 
 使用了自己封装的net_addr类来代替linux系统的sockaddr, 以自定义更多的功能, 并将其作为TCPAcceptor的地址类
+
+#### TCPServer设计 20240226
+使用主从Reactor的架构
+
+```
+* 主线程mainReactor: 通过epoll监听listenfd的可读事件, 当有可读事件发生时, 调用accept函数获取clientfd, 随机抽取一个subReactor,
+                     将clientfd的读写事件注册到这个subReactor的epoll上
+                     mainReactor只负责建立连接事件，不进行业务处理，也不关心套接字的IO事件
+
+* 从线程subReactor: 每个subReactor都由一个线程来运行, 注册clientfd的读写事件, 当IO事件发生后, 需要进行对应的业务处理
+```
+
 

@@ -3,7 +3,11 @@
 
 #include <string>
 #include <queue>
-#include "locker.h"
+#include <semaphore.h>
+#include <memory>
+#include "tinyrpc/common/locker.h"
+#include "tinyrpc/net/time_event.h"
+#include "tinyrpc/net/eventloop.h"
 
 namespace MyTinyRPC {
 
@@ -51,14 +55,45 @@ enum LogLevel {
 std::string LogLevelToString(LogLevel level);
 LogLevel StringToLogLevel(std::string& log_level);
 
+class AsyncLogger {
+public:
+    typedef std::shared_ptr<AsyncLogger> s_ptr;
+    AsyncLogger(std::string file_name, std::string file_path, int max_size);
+    ~AsyncLogger();
+    static void* loop(void*); // 核心循环函数
+    void pushLogBuffer(std::vector<std::string> &vec);
+    void stop();
+    void flush();
+    
+private: 
+    std::queue<std::vector<std::string>> m_buffer; // 缓冲区
+    // m_file_path/m_file_name_yyyymmdd_0_log
+    std::string m_file_name; // 日志输出文件名
+    std::string m_file_path; // 日志输出路径
+    int m_max_file_size{ 0 }; // 日志单个文件最大大小
+
+    sem_t m_semaphore; // 信号量, 用于实现buffer区的写入
+    pthread_cond_t m_conditon; // 条件变量, 用于实现buffer区的写入
+    Mutex m_mutex; // 互斥锁, 与条件变量结合使用
+    pthread_t m_thread; // 写日志线程
+
+    std::string m_date; // 当前打开的日志文件的日期
+    FILE* m_file_handler{ NULL }; // 当前打开的日志文件句柄
+    bool m_reopen_flag{ false }; // 是否需要重新打开日志文件：文件打开失败？超出日志最大大小？文件名修改（天数改变）？
+    int m_no{ 0 }; // 日志文件序号, 从0开始
+    bool m_stop_flag{ false };
+};
+
 class Logger {
 public: 
-    Logger(LogLevel level) : m_set_level(level){}
+    Logger(LogLevel level);
     LogLevel getLogLevel() {
         return m_set_level;
     }
+    void init();
     void pushLog(const std::string msg);
     void log(); // 实现日志打印的方法
+    void asyncLoop();
 
 public:
     static Logger* getGlobalLogger();
@@ -66,8 +101,11 @@ public:
 
 private:
     LogLevel m_set_level; // 设置的日志级别，高于日志级别才打印
-    std::queue<std::string> m_buffer; // 日志缓冲队列
+    std::vector<std::string> m_buffer; // 日志缓冲队列
     Mutex m_mutex; // 日志缓冲队列的互斥锁
+    AsyncLogger::s_ptr m_async_logger;
+    TimeEvent::s_ptr m_time_event;
+    EventLoop* m_event_loop;
 };
 
 class LogEvent {
@@ -84,10 +122,8 @@ public:
     std::string toString();
 private:
     std::string m_file_name; // 输出文件
-    int32_t m_file_line; // 行号
     int32_t m_pid; // 进程号
     int32_t m_tid; // 线程号
-    std::string m_timestamp; // 时间
 
     LogLevel m_level; // 日志级别
 };
