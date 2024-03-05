@@ -132,26 +132,21 @@ void* AsyncLogger::loop(void* arg) {
         strftime(date, 32, "%Y%m%d", &now_time);
 
         // 判断日志文件是否需要重新被打开: 更换日期?超出大小?文件打开失败?
-        if(std::string(date) != async_logger->m_date || 
-        ftell(async_logger->m_file_handler) > async_logger->m_max_file_size ||
-        async_logger->m_file_handler == NULL) {
+        if(std::string(date) != async_logger->m_date) {
             async_logger->m_reopen_flag = true;
-            if(std::string(date) != async_logger->m_date) {
-                async_logger->m_no = 0;
-                async_logger->m_date = std::string(date);
-            }
+            async_logger->m_date = std::string(date);
+            async_logger->m_no = 0;
+        }
 
-            if(ftell(async_logger->m_file_handler) > async_logger->m_max_file_size) {
-                async_logger->m_no++;
-            }
+        if (async_logger->m_file_handler == NULL) {
+            async_logger->m_reopen_flag = true;
         }
 
         std::stringstream ss;
         ss << async_logger->m_file_path << async_logger->m_file_name << "_"
-        << async_logger->m_date << "_log" << "_" << std::to_string(async_logger->m_no);
+        << async_logger->m_date << "_log_";
         
-        std::string log_file_name = ss.str();
-        
+        std::string log_file_name = ss.str() + std::to_string(async_logger->m_no);
         if(async_logger->m_reopen_flag) {
             if(async_logger->m_file_handler) {
                 fclose(async_logger->m_file_handler);
@@ -159,16 +154,26 @@ void* AsyncLogger::loop(void* arg) {
             async_logger->m_file_handler = fopen(log_file_name.c_str(), "a");
             async_logger->m_reopen_flag = false;
         }
+        
+        if(ftell(async_logger->m_file_handler) >= async_logger->m_max_file_size) {
+            fclose(async_logger->m_file_handler);
+            log_file_name = ss.str() + std::to_string(async_logger->m_no++);
+            async_logger->m_file_handler = fopen(log_file_name.c_str(), "a");
+
+            async_logger->m_reopen_flag = false;
+        }
 
         // 写入日志文件
         for(auto &msg : tmp) {
-            fwrite(msg.c_str(), 1, msg.length(), async_logger->m_file_handler);
+            if(!msg.empty()) {
+                fwrite(msg.c_str(), 1, msg.length(), async_logger->m_file_handler);
+            }
         }
         fflush(async_logger->m_file_handler);
 
         // 输出完毕后判断是否需要停止
         if(async_logger->m_stop_flag) {
-            break;
+            return NULL;
         }
     }
     return NULL;
