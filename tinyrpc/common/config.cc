@@ -9,7 +9,7 @@ if(!name##_node) { \
 } \
 
 #define READ_STR_FROM_XML_NODE(name, parent) \
-TiXmlElement* name##_node = parent->FirstChildElement(); \
+TiXmlElement* name##_node = parent->FirstChildElement(#name); \
 if(!name##_node || !name##_node->GetText()) { \
     printf("Start tinyrpc server error, failed to read node [%s]\n", "#name"); \
     exit(0); \

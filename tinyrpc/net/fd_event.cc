@@ -1,5 +1,7 @@
-#include "fd_event.h"
 #include <string.h>
+#include <fcntl.h>
+#include "tinyrpc/net/fd_event.h"
+
 
 namespace MyTinyRPC {
 FdEvent::FdEvent(int fd) : m_fd(fd){
@@ -13,6 +15,14 @@ FdEvent::FdEvent() {
 
 FdEvent::~FdEvent() {
 
+}
+
+void FdEvent::setNonBlock() {
+    int flag = fcntl(m_fd, F_GETFL, 0);
+    if(flag & O_NONBLOCK) {
+        return;
+    }
+    fcntl(m_fd, F_SETFL, O_NONBLOCK);
 }
 
 std::function<void()> FdEvent::handler(TriggerEvent event_type) {

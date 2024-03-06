@@ -15,8 +15,9 @@ public:
     FdEvent(int fd);
     FdEvent();
     ~FdEvent();
-    std::function<void()> handler(TriggerEvent event_type);
-    void listen(TriggerEvent event_type, std::function<void()> callback);
+    void setNonBlock(); // 设置未阻塞
+    std::function<void()> handler(TriggerEvent event_type); // 返回事件绑定的函数
+    void listen(TriggerEvent event_type, std::function<void()> callback); // 绑定函数
     int getFd() {
         return m_fd;
     }

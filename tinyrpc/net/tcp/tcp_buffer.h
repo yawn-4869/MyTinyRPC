@@ -7,6 +7,7 @@ namespace MyTinyRPC {
 
 class TcpBuffer {
 public:
+    typedef std::shared_ptr<TcpBuffer> s_ptr;
     TcpBuffer(int size);
     ~TcpBuffer();
 

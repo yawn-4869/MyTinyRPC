@@ -100,6 +100,13 @@ void EventLoop::addEpollEvent(FdEvent* event) {
     }
 }
 ```
+### IO事件 ###
+使用FdEvent来对发生的epoll事件进行封装, 包括EPOLL_IN和EPOLL_OUT
+```
+提供的公用方法: 设置未阻塞，绑定事件与函数，绑定函数的返回，获取fd
+```
+
+为了近一步方便管理fdEvent, 设置了FdEventPool, 设计思路与IOThreadPool类似
 
 ### 定时器 20240126
 #### 定时任务 TimerEvent
@@ -186,4 +193,5 @@ socket => bind => listen => accept
 * 从线程subReactor: 每个subReactor都由一个线程来运行, 注册clientfd的读写事件, 当IO事件发生后, 需要进行对应的业务处理
 ```
 
-
+#### TCPConnection设计 20240306
+主要业务：

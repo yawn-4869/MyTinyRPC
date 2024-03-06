@@ -125,7 +125,8 @@ int main() {
     // eventloop->addTimerEvent(timer_event);
     // eventloop->loop();
 
-    test_io_thread();
+    // test_io_thread();
+    MyTinyRPC::EventLoop::GetCurrentEventLoop()->loop();
 
     return 0;
 }
