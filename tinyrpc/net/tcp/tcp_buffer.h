@@ -19,11 +19,17 @@ public:
     int getWriteIndex() {
         return m_write_idx;
     }
+    int getBufferSize() {
+        return m_size;
+    }
     void writeToBuffer(const char* buf, int size); // 写入数据
     void readFromBuffer(std::vector<char>& res, int size); // 读取数据
     void resizeBuffer(int new_size); // 调整Buffer大小
     void moveReadIndex(int size); // 手动调整读指针
     void moveWriteIndex(int size); // 手动调整写指针
+
+public:
+    std::vector<char> m_buffer;
 
 private:
     void adjustBuffer(); // 调节左右指针，防止内存泄漏
@@ -32,7 +38,6 @@ private:
     int m_size{ 0 };
     int m_read_idx{ 0 };
     int m_write_idx{ 0 };
-    std::vector<char> m_buffer;
 };
 }
 

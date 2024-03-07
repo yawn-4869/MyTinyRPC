@@ -194,4 +194,13 @@ socket => bind => listen => accept
 ```
 
 #### TCPConnection设计 20240306
-主要业务：
+主要业务流程：read -> excute -> write
+```
+read: 读取客户端发来的数据, 存入到读入缓冲区inbuffer, 
+
+excute: 从inbuffer中读取数据, 解码组装为rpc请求
+解析rpc请求, 执行业务逻辑, 获取rpc响应, 
+获取到的rpc请求将会在编码后存入到写出缓冲区outBuffer, 准备向客户端发送
+
+write: 从outBuffer将数据解码生成rpc响应, 在对应的fd可写的情况下, 将rpc响应返回给客户端
+```
