@@ -64,6 +64,11 @@ EventLoop::~EventLoop() {
         delete m_wakeup_fd_event;
         m_wakeup_fd_event = NULL;
     }
+
+    if(m_timer) {
+        delete m_timer;
+        m_timer = NULL;
+    }
 }
 
 void EventLoop::loop() {
@@ -100,12 +105,12 @@ void EventLoop::loop() {
                 }
 
                 if(trigger_event.events & EPOLLIN) {
-                    DEBUGLOG("fd %d trigger EPOLLIN event", fd_event->getFd())
+                    // DEBUGLOG("fd %d trigger EPOLLIN event", fd_event->getFd())
                     addTask(fd_event->handler(FdEvent::IN_EVENT));
                 }
 
                 if(trigger_event.events & EPOLLOUT) {
-                    DEBUGLOG("fd %d trigger EPOLLOUT event", fd_event->getFd())
+                    // DEBUGLOG("fd %d trigger EPOLLOUT event", fd_event->getFd())
                     addTask(fd_event->handler(FdEvent::OUT_EVENT));
                 }
             }
@@ -119,6 +124,7 @@ void EventLoop::wakeup() {
 
 void EventLoop::stop() {
     m_stop_flag = true;
+    wakeup();
 }
 
 void EventLoop::addEpollEvent(FdEvent* event) {

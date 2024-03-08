@@ -66,6 +66,8 @@ void Timer::onTimer() {
         }
     }
 
+    // printf("on Timer\n");
+
     int64_t now = getNowMs();
     std::vector<TimeEvent::s_ptr> tmp_events;
     std::vector<std::pair<int64_t, std::function<void()>>> tmp_tasks;

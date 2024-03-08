@@ -51,6 +51,52 @@ Logger 日志器
 读取完毕后启动额外的日志线程来输出到指定文件
 ```
 
+修复了bug：异步日志一直阻塞的问题
+
+1. 自定义的Mutex类locker.h修改
+```
+原来的：
+void unlock() {
+    if(m_is_lock) {
+        m_mutex.unlock();
+        m_is_lock = false;
+    }
+}
+修改后：
+void unlock() {
+    if(m_is_lock) {
+        m_mutex.unlock();
+    }
+}
+```
+
+2. 定时器错误
+```
+原来的onTimer函数执行任务流程有错误：
+while(it != m_pending_events.end()) {
+    if(it->first > now) {
+        break;
+    }
+    if(!it->second->isCancel()) {
+        tmp_events.push_back(it->second);
+        tmp_tasks.push_back(std::make_pair(it->first, it->second->getCallback()));
+    }
+    it++;
+}
+在需要执行的任务队列tmp_tasks中，存放的应该是到期的时间, 而不是it->first, 但好像没什么问题？
+经测试没有问题，因此只是自定义互斥锁类的问题
+while(it != m_pending_events.end()) {
+    if(it->first > now) {
+        break;
+    }
+    if(!it->second->isCancel()) {
+        tmp_events.push_back(it->second);
+        tmp_tasks.push_back(std::make_pair(it->second->getArriveTime(), it->second->getCallback()));
+    }
+    it++;
+}
+```
+
 ### 配置模块开发 20240115
 通过第三方库tinyxml读取xml配置文件
 

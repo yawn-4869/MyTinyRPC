@@ -27,12 +27,11 @@ public:
     void unlock() {
         if(m_is_lock) {
             m_mutex.unlock();
-            m_is_lock = false;
         }
     }
     
 private:
-    T m_mutex;
+    T& m_mutex;
     bool m_is_lock {false};
 };
 

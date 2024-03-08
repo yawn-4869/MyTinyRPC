@@ -28,7 +28,7 @@ void Logger::init() {
                                                     Config::GetGloabalConfig()->m_log_max_file_size);
     m_time_event = std::make_shared<TimeEvent>(Config::GetGloabalConfig()->m_async_log_interval, true, 
                                                 std::bind(&Logger::asyncLoop, this));   
-    // EventLoop::GetCurrentEventLoop()->addTimerEvent(m_time_event);
+    EventLoop::GetCurrentEventLoop()->addTimerEvent(m_time_event);
 }
 
 void Logger::pushLog(const std::string msg) {
@@ -64,6 +64,7 @@ void Logger::asyncLoop() {
     if(tmp.empty()) {
         return;
     }
+    // printf("logger asyncLoop: push tmp.size():%d, msg: %s\n", tmp.size(), tmp[0].c_str());
     m_async_logger->pushLogBuffer(tmp);
 }
 
@@ -95,7 +96,8 @@ LogLevel StringToLogLevel(std::string& log_level) {
 AsyncLogger::AsyncLogger(std::string file_name, std::string file_path, int max_size)
     : m_file_name(file_name), m_file_path(file_path), m_max_file_size(max_size) {
     sem_init(&m_semaphore, 0, 0);
-    pthread_create(&m_thread, NULL, &AsyncLogger::loop, this);
+    pthread_create(&m_thread, NULL, &AsyncLogger::Loop, this);
+    // assert(pthread_cond_init(&m_conditon, NULL) == 0);
     sem_wait(&m_semaphore);
 }
 
@@ -103,22 +105,25 @@ AsyncLogger::~AsyncLogger() {
 
 }
 
-void* AsyncLogger::loop(void* arg) {
+void* AsyncLogger::Loop(void* arg) {
     // 定时将buffer中的全部数据打印到文件中, 然后线程睡眠, 直到定时任务再次唤醒
     AsyncLogger* async_logger = reinterpret_cast<AsyncLogger*>(arg);
-    pthread_cond_init(&async_logger->m_conditon, NULL);
+    assert(pthread_cond_init(&async_logger->m_conditon, NULL) == 0);
     sem_post(&async_logger->m_semaphore);
 
-    while(1) {
+    while(true) {
         ScopeLocker<Mutex> lck(async_logger->m_mutex);
         while(async_logger->m_buffer.empty()) {
             // 等待缓冲区内有数据
-            pthread_cond_wait(&async_logger->m_conditon, async_logger->m_mutex.getMutex());
+            pthread_cond_wait(&(async_logger->m_conditon), async_logger->m_mutex.getMutex());
         }
+
+        // printf("AsyncLogger::Loop: pthread_cond_wait end, start loop thread\n");
         // 为解决缓冲区读出与写入速度不匹配的问题
         // 即有可能在缓冲区内的内容还未全部写入到日志文件时, 又有新的数据要写入到缓冲区
         // 因此使用队列作为缓冲区的数据结构, 每次只读取队首的数据
-        std::vector<std::string> tmp = async_logger->m_buffer.front();
+        std::vector<std::string> tmp;
+        tmp.swap(async_logger->m_buffer.front());
         async_logger->m_buffer.pop();
         lck.unlock();
 
@@ -181,10 +186,11 @@ void* AsyncLogger::loop(void* arg) {
 void AsyncLogger::pushLogBuffer(std::vector<std::string> &vec) {
     ScopeLocker<Mutex> lck(m_mutex);
     m_buffer.push(vec);
+    pthread_cond_signal(&m_conditon);
     lck.unlock();
 
     // 唤醒线程
-    pthread_cond_signal(&m_conditon);
+    // printf("pushLogBuffer success, pthread_con_signal...\n");
 }
 
 void AsyncLogger::stop() {

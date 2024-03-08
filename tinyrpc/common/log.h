@@ -60,7 +60,7 @@ public:
     typedef std::shared_ptr<AsyncLogger> s_ptr;
     AsyncLogger(std::string file_name, std::string file_path, int max_size);
     ~AsyncLogger();
-    static void* loop(void*); // 核心循环函数
+    static void* Loop(void*); // 核心循环函数
     void pushLogBuffer(std::vector<std::string> &vec);
     void stop();
     void flush();
