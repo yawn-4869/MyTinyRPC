@@ -1,0 +1,50 @@
+[INFO]	[24-03-08 10:18:13.204]	[2811:2811]	[tinyrpc/net/eventloop.cc:126]	epoll_event.events=1
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2811]	[tinyrpc/net/eventloop.cc:126]	add event success, fd[4]
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2811]	[tinyrpc/net/timer.cc:12]	timer fd=5
+[INFO]	[24-03-08 10:18:13.205]	[2811:2811]	[tinyrpc/net/eventloop.cc:126]	epoll_event.events=1
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2811]	[tinyrpc/net/eventloop.cc:126]	add event success, fd[5]
+[INFO]	[24-03-08 10:18:13.205]	[2811:2811]	[tinyrpc/net/eventloop.cc:57]	success created event loop in thread 2811
+[INFO]	[24-03-08 10:18:13.205]	[2811:2813]	[tinyrpc/net/eventloop.cc:126]	epoll_event.events=1
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2813]	[tinyrpc/net/eventloop.cc:126]	add event success, fd[7]
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2813]	[tinyrpc/net/timer.cc:12]	timer fd=8
+[INFO]	[24-03-08 10:18:13.205]	[2811:2813]	[tinyrpc/net/eventloop.cc:126]	epoll_event.events=1
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2813]	[tinyrpc/net/eventloop.cc:126]	add event success, fd[8]
+[INFO]	[24-03-08 10:18:13.205]	[2811:2813]	[tinyrpc/net/eventloop.cc:57]	success created event loop in thread 2813
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2813]	[tinyrpc/net/io_thread.cc:44]	IOThread [2813] created wait to start
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2811]	[tinyrpc/net/io_thread.cc:19]	IOThread [2813] create success
+[INFO]	[24-03-08 10:18:13.205]	[2811:2814]	[tinyrpc/net/eventloop.cc:126]	epoll_event.events=1
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2814]	[tinyrpc/net/eventloop.cc:126]	add event success, fd[10]
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2814]	[tinyrpc/net/timer.cc:12]	timer fd=11
+[INFO]	[24-03-08 10:18:13.205]	[2811:2814]	[tinyrpc/net/eventloop.cc:126]	epoll_event.events=1
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2814]	[tinyrpc/net/eventloop.cc:126]	add event success, fd[11]
+[INFO]	[24-03-08 10:18:13.205]	[2811:2814]	[tinyrpc/net/eventloop.cc:57]	success created event loop in thread 2814
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2814]	[tinyrpc/net/io_thread.cc:44]	IOThread [2814] created wait to start
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2811]	[tinyrpc/net/io_thread.cc:19]	IOThread [2814] create success
+[INFO]	[24-03-08 10:18:13.205]	[2811:2815]	[tinyrpc/net/eventloop.cc:126]	epoll_event.events=1
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2815]	[tinyrpc/net/eventloop.cc:126]	add event success, fd[13]
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2815]	[tinyrpc/net/timer.cc:12]	timer fd=14
+[INFO]	[24-03-08 10:18:13.205]	[2811:2815]	[tinyrpc/net/eventloop.cc:126]	epoll_event.events=1
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2815]	[tinyrpc/net/eventloop.cc:126]	add event success, fd[14]
+[INFO]	[24-03-08 10:18:13.205]	[2811:2815]	[tinyrpc/net/eventloop.cc:57]	success created event loop in thread 2815
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2815]	[tinyrpc/net/io_thread.cc:44]	IOThread [2815] created wait to start
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2811]	[tinyrpc/net/io_thread.cc:19]	IOThread [2815] create success
+[INFO]	[24-03-08 10:18:13.205]	[2811:2816]	[tinyrpc/net/eventloop.cc:126]	epoll_event.events=1
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2816]	[tinyrpc/net/eventloop.cc:126]	add event success, fd[16]
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2816]	[tinyrpc/net/timer.cc:12]	timer fd=17
+[INFO]	[24-03-08 10:18:13.205]	[2811:2816]	[tinyrpc/net/eventloop.cc:126]	epoll_event.events=1
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2816]	[tinyrpc/net/eventloop.cc:126]	add event success, fd[17]
+[INFO]	[24-03-08 10:18:13.205]	[2811:2816]	[tinyrpc/net/eventloop.cc:57]	success created event loop in thread 2816
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2816]	[tinyrpc/net/io_thread.cc:44]	IOThread [2816] created wait to start
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2811]	[tinyrpc/net/io_thread.cc:19]	IOThread [2816] create success
+[INFO]	[24-03-08 10:18:13.205]	[2811:2811]	[tinyrpc/net/eventloop.cc:126]	epoll_event.events=1
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2811]	[tinyrpc/net/eventloop.cc:126]	add event success, fd[18]
+[INFO]	[24-03-08 10:18:13.205]	[2811:2811]	[tinyrpc/net/tcp/tcp_server.cc:8]	TcpServer listen sucess on [127.0.0.1:12345]
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2811]	[tinyrpc/net/io_thread.cc:57]	Now invoke IOThread [2813]
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2811]	[tinyrpc/net/io_thread.cc:57]	Now invoke IOThread [2814]
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2813]	[tinyrpc/net/io_thread.cc:48]	IOThread [2813] start loop
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2811]	[tinyrpc/net/io_thread.cc:57]	Now invoke IOThread [2815]
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2811]	[tinyrpc/net/io_thread.cc:57]	Now invoke IOThread [2816]
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2815]	[tinyrpc/net/io_thread.cc:48]	IOThread [2815] start loop
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2814]	[tinyrpc/net/io_thread.cc:48]	IOThread [2814] start loop
+[DEBUG]	[24-03-08 10:18:13.205]	[2811:2816]	[tinyrpc/net/io_thread.cc:48]	IOThread [2816] start loop
+[DEBUG]	[24-03-08 10:18:13.704]	[2811:2811]	[tinyrpc/net/eventloop.cc:103]	fd 5 trigger EPOLLIN event

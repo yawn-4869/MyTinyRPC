@@ -2,6 +2,7 @@
 #define MYTINYRPC_NET_TCP_TCP_BUFFER_H
 
 #include <vector>
+#include <memory>
 
 namespace MyTinyRPC {
 

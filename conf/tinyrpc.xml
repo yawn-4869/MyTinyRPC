@@ -7,4 +7,9 @@
         <log_max_file_size>10000</log_max_file_size>
         <async_log_interval>500</async_log_interval>
     </log>
+
+    <server>
+        <port>12346</port>
+        <io_threads>4</io_threads>
+    </server>
 </root>

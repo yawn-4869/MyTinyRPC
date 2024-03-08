@@ -122,6 +122,7 @@ void TcpConnection::onWrite() {
             ERRORLOG("write data error, errno==EAGIN and rt == -1");
             break;
         }
+
     }
 
     if(is_write_all) {
@@ -148,7 +149,7 @@ void TcpConnection::listenRead() {
 }
 
 void TcpConnection::listenWrite() {
-    m_fd_event->listen(FdEvent::IN_EVENT, std::bind(&TcpConnection::onWrite, this));
+    m_fd_event->listen(FdEvent::OUT_EVENT, std::bind(&TcpConnection::onWrite, this));
     m_event_loop->addEpollEvent(m_fd_event);
 }
 

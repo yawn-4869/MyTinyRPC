@@ -14,7 +14,6 @@ Logger* Logger::getGlobalLogger() {
 
 void Logger::InitGlobalLogger() {
     std::string global_log_level = Config::GetGloabalConfig()->getGlobalLogLevel();
-    printf("Init log level [%s]\n", global_log_level.c_str());
     g_logger = new Logger(StringToLogLevel(global_log_level));
     g_logger->init();
 }
@@ -29,7 +28,7 @@ void Logger::init() {
                                                     Config::GetGloabalConfig()->m_log_max_file_size);
     m_time_event = std::make_shared<TimeEvent>(Config::GetGloabalConfig()->m_async_log_interval, true, 
                                                 std::bind(&Logger::asyncLoop, this));   
-    EventLoop::GetCurrentEventLoop()->addTimerEvent(m_time_event);
+    // EventLoop::GetCurrentEventLoop()->addTimerEvent(m_time_event);
 }
 
 void Logger::pushLog(const std::string msg) {

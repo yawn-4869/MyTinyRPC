@@ -15,6 +15,16 @@ FdEventPool::~FdEventPool() {
     }
 }
 
+static FdEventPool* g_fd_event_pool = NULL;
+FdEventPool* FdEventPool::GetFdEventPool() {
+    if(g_fd_event_pool) {
+        return g_fd_event_pool;
+    }
+
+    g_fd_event_pool = new FdEventPool(128);
+    return g_fd_event_pool;
+}
+
 FdEvent* FdEventPool::getFdEvent(int fd){
     if(fd < m_size) {
         return m_fd_event_pool[fd];

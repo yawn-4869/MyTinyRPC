@@ -2,6 +2,7 @@
 #define MYTINYRPC_COMMON_CONFIG_H
 
 #include <string>
+#include <tinyxml/tinyxml.h>
 
 namespace MyTinyRPC {
 
@@ -23,6 +24,11 @@ public:
     std::string m_log_file_path;
     int m_log_max_file_size{ 0 };
     int m_async_log_interval{ 0 };
+
+    int m_port{ 0 };
+    int m_io_threads{ 0 };
+
+    TiXmlDocument* m_xml_document;
 };
 
 }
