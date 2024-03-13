@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include "tinyrpc/common/log.h"
 #include "tinyrpc/common/config.h"
+#include "tinyrpc/net/tcp/tcp_client.h"
 
 void test_connect() {
     // 调用connect连接server
@@ -35,11 +36,21 @@ void test_connect() {
     printf("success read %d bytes from server, msg: %s\n", rt, std::string(buf).c_str());
 }
 
+void test_client() {
+    // MyTinyRPC::IPNetAddr::s_ptr local_addr = std::make_shared<MyTinyRPC::IPNetAddr>("127.0.0.1", 12346);
+    MyTinyRPC::IPNetAddr::s_ptr peer_addr = std::make_shared<MyTinyRPC::IPNetAddr>("127.0.0.1", 12345);
+    MyTinyRPC::TcpClient::s_ptr client = std::make_shared<MyTinyRPC::TcpClient>(nullptr, peer_addr);
+    client->onConnect([peer_addr]() {
+        printf("connect to [%s] success", peer_addr->toString().c_str());
+    });
+}
+
 int main() {
     MyTinyRPC::Config::SetGlobalConfig("../conf/tinyrpc.xml");
     MyTinyRPC::Logger::InitGlobalLogger();
 
-    test_connect();
+    // test_connect();
+    test_client();
 
     return 0;
 }

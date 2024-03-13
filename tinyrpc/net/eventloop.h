@@ -1,5 +1,5 @@
-#ifndef MYTINYRPC_EVENTLOOP_H
-#define MYTINYRPC_EVENTLOOP_H
+#ifndef MYTINYRPC_NET_EVENTLOOP_H
+#define MYTINYRPC_NET_EVENTLOOP_H
 
 #include <pthread.h>
 #include <set>
@@ -26,6 +26,9 @@ public:
     void addEpollEvent(FdEvent* event);
     void addTimerEvent(TimeEvent::s_ptr event);
     void deleteEpollEvent(FdEvent* event);
+    bool isLooping() {
+        return m_is_looping;
+    }
 
 public:
     static EventLoop* GetCurrentEventLoop();
@@ -41,6 +44,7 @@ private:
     pid_t m_thread_id{ 0 }; // 线程id
     int m_epoll_fd{ 0 }; // epoll fd
     bool m_stop_flag{ false }; // 循环停止标志
+    bool m_is_looping{ false }; // 是否循环
     std::set<int> m_listen_fds; // 监听事件fd集合
     std::queue<std::function<void()>> m_pending_tasks; // 任务队列
     Mutex m_mutex; // 互斥锁

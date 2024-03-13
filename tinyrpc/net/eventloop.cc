@@ -72,6 +72,7 @@ EventLoop::~EventLoop() {
 }
 
 void EventLoop::loop() {
+    m_is_looping = true;
     while(!m_stop_flag) {
         // 处理任务队列
         ScopeLocker<Mutex> lock(m_mutex);
@@ -124,6 +125,7 @@ void EventLoop::wakeup() {
 
 void EventLoop::stop() {
     m_stop_flag = true;
+    m_is_looping = false;
     wakeup();
 }
 

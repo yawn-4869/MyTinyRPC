@@ -5,6 +5,7 @@
 #include "tinyrpc/net/tcp/net_addr.h"
 #include "tinyrpc/net/tcp/tcp_buffer.h"
 #include "tinyrpc/net/fd_event_pool.h"
+#include "tinyrpc/net/abstract_protocol.h"
 
 namespace MyTinyRPC {
 
@@ -13,6 +14,11 @@ enum TcpState {
     Connected = 2,
     HalfClosed = 3,
     Closed = 4
+};
+
+enum TcpConnectionType {
+    TcpConnectionByServer = 1, // 作为服务端使用, 代表对客户端的连接
+    TcpConnectionByClient = 2  // 作为客户端使用, 代表对服务端的连接
 };
 
 class TcpConnection {
@@ -30,9 +36,12 @@ public:
     void setState(const TcpState& state) { // 设置连接状态
         m_state = state;
     }
-
     const TcpState getState() {
         return m_state;
+    }
+    void setConnectionType(const TcpConnectionType& type) {
+        // 设置连接类别
+        m_connection_type = type;
     }
 
 private:
@@ -52,6 +61,9 @@ private:
     TcpBuffer::s_ptr m_out_buffer; // 写出缓冲区
 
     TcpState m_state; // 连接状态
+    TcpConnectionType m_connection_type{ TcpConnectionByServer };
+
+    std::queue<std::pair<AbstractProtocol::s_ptr, std::function<void(AbstractProtocol::s_ptr)>>> m_write_dones;
 };
 
 }

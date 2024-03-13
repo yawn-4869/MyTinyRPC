@@ -12,8 +12,10 @@ TcpConnection::TcpConnection(EventLoop* event_loop, int fd, int buffer_size, Net
     m_fd_event = FdEventPool::GetFdEventPool()->getFdEvent(fd);
     m_fd_event->setNonBlock();
 
-    // 一直监听读事件
-    listenRead();
+    // 服务端一直监听读事件
+    if(m_connection_type == TcpConnectionByServer) {
+        listenRead();
+    }
 }
 
 TcpConnection::~TcpConnection() {

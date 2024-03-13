@@ -250,3 +250,15 @@ excute: 从inbuffer中读取数据, 解码组装为rpc请求
 
 write: 从outBuffer将数据解码生成rpc响应, 在对应的fd可写的情况下, 将rpc响应返回给客户端
 ```
+#### TcpClient设计 20240308
+主要业务流程：connect -> write -> read
+```
+connect: 采用非阻塞方式连接对端机器(异步)
+对于非阻塞方式的connect, 无论是否连接成功都立即返回: 
+1. 返回0: 连接成功
+2. 返回-1, errno = EINPROGRESS: 连接正在建立, 可以在epoll中添加监听可写事件
+等可写事件就绪, 调用getsockopt获取fd上的错误, 若返回0, 则连接成功
+3. 其他errno：不做处理, 直接报错
+
+write: connect成功后, 把message对象写入到Connection中buffer中,监听可写事件
+```
