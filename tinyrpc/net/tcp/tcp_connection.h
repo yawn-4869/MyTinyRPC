@@ -6,6 +6,7 @@
 #include "tinyrpc/net/tcp/tcp_buffer.h"
 #include "tinyrpc/net/fd_event_pool.h"
 #include "tinyrpc/net/abstract_protocol.h"
+#include "tinyrpc/net/string_coder.h"
 
 namespace MyTinyRPC {
 
@@ -32,6 +33,7 @@ public:
     void excute();
     void onWrite();
     void shutDown(); // 服务器主动关闭
+    void pushSendMessage(AbstractProtocol::s_ptr message, std::function<void(AbstractProtocol::s_ptr)> done);
 
     void setState(const TcpState& state) { // 设置连接状态
         m_state = state;
@@ -63,7 +65,10 @@ private:
     TcpState m_state; // 连接状态
     TcpConnectionType m_connection_type{ TcpConnectionByServer };
 
-    std::queue<std::pair<AbstractProtocol::s_ptr, std::function<void(AbstractProtocol::s_ptr)>>> m_write_dones;
+    AbstractCoder* m_coder;
+
+    // 存储请求和对应的回调函数
+    std::vector<std::pair<AbstractProtocol::s_ptr, std::function<void(AbstractProtocol::s_ptr)>>> m_write_dones;
 };
 
 }

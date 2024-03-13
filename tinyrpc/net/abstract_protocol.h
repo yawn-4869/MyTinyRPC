@@ -17,6 +17,8 @@ public:
         m_req_id = req_id;
     }
 
+    virtual ~AbstractProtocol();
+
 protected:
     std::string m_req_id; // 请求号, 唯一的标识一个请求或响应
 };

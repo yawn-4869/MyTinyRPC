@@ -35,6 +35,7 @@
         "cstring": "cpp",
         "unordered_set": "cpp",
         "cfenv": "cpp",
-        "numeric": "cpp"
+        "numeric": "cpp",
+        "string": "cpp"
     }
 }

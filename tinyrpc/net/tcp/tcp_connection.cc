@@ -12,6 +12,8 @@ TcpConnection::TcpConnection(EventLoop* event_loop, int fd, int buffer_size, Net
     m_fd_event = FdEventPool::GetFdEventPool()->getFdEvent(fd);
     m_fd_event->setNonBlock();
 
+    m_coder = new StringCoder();
+
     // 服务端一直监听读事件
     if(m_connection_type == TcpConnectionByServer) {
         listenRead();
@@ -99,6 +101,17 @@ void TcpConnection::onWrite() {
         return;
     }
 
+    std::vector<AbstractProtocol*> messages;
+    if(m_connection_type == TcpConnectionByClient) {
+        // 如果是客户端连接, 将所有的message写入buffer
+        // 1. message序列化(编码) 2. 保存到buffer 3. 读取buffer, 发送(已完成)
+        for(int i = 0; i < m_write_dones.size(); ++i) {
+            messages.push_back(m_write_dones[i].first.get());
+        }
+
+        m_coder->encode(messages, m_out_buffer);
+    }
+
     bool is_write_all = false;
     while(true) {
         if(!m_out_buffer->readAble()) {
@@ -131,6 +144,15 @@ void TcpConnection::onWrite() {
         m_fd_event->cancel(FdEvent::OUT_EVENT);
         m_event_loop->addEpollEvent(m_fd_event);
     }
+
+    if(m_connection_type == TcpConnectionByClient) {
+        // 执行回调函数
+        for(int i = 0; i < m_write_dones.size(); ++i) {
+            m_write_dones[i].second(m_write_dones[i].first);
+        }
+
+        m_write_dones.clear();
+    }
 }
 
 void TcpConnection::shutDown() {
@@ -143,6 +165,10 @@ void TcpConnection::shutDown() {
 
     // 调用 shutdown 关闭读写，服务器不会再对这个 fd 进行读写操作了
     shutdown(m_fd, SHUT_RDWR);
+}
+
+void TcpConnection::pushSendMessage(AbstractProtocol::s_ptr message, std::function<void(AbstractProtocol::s_ptr)> done) {
+    m_write_dones.push_back(std::make_pair(message, done));
 }
 
 void TcpConnection::listenRead() {

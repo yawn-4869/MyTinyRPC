@@ -81,7 +81,8 @@ void TcpClient::onConnect(std::function<void()> done) {
 }
 
 void TcpClient::writeMessage(AbstractProtocol::s_ptr request, std::function<void(AbstractProtocol::s_ptr)> done) {
-    
+    m_connection->pushSendMessage(request, done);
+    m_connection->listenWrite();
 }
 
 }
