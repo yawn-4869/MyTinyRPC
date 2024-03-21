@@ -5,8 +5,8 @@
 #include "tinyrpc/net/tcp/net_addr.h"
 #include "tinyrpc/net/tcp/tcp_buffer.h"
 #include "tinyrpc/net/fd_event_pool.h"
-#include "tinyrpc/net/abstract_protocol.h"
-#include "tinyrpc/net/string_coder.h"
+#include "tinyrpc/net/coder/abstract_protocol.h"
+#include "tinyrpc/net/coder/string_coder.h"
 
 namespace MyTinyRPC {
 
@@ -46,9 +46,10 @@ public:
         m_connection_type = type;
     }
 
+    void listenWrite(); // 监听写事件
+
 private:
     void listenRead(); // 监听读事件
-    void listenWrite(); // 监听写事件
     void clear(); // 清理连接断开后的事件
 
 private:

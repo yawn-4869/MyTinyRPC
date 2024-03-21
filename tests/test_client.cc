@@ -4,6 +4,7 @@
 #include "tinyrpc/common/log.h"
 #include "tinyrpc/common/config.h"
 #include "tinyrpc/net/tcp/tcp_client.h"
+#include "tinyrpc/net/coder/abstract_protocol.h"
 
 void test_connect() {
     // 调用connect连接server
@@ -38,10 +39,15 @@ void test_connect() {
 
 void test_client() {
     // MyTinyRPC::IPNetAddr::s_ptr local_addr = std::make_shared<MyTinyRPC::IPNetAddr>("127.0.0.1", 12346);
-    MyTinyRPC::IPNetAddr::s_ptr peer_addr = std::make_shared<MyTinyRPC::IPNetAddr>("127.0.0.1", 12345);
+    MyTinyRPC::IPNetAddr::s_ptr peer_addr = std::make_shared<MyTinyRPC::IPNetAddr>("127.0.0.1", 12346);
     MyTinyRPC::TcpClient::s_ptr client = std::make_shared<MyTinyRPC::TcpClient>(nullptr, peer_addr);
-    client->onConnect([peer_addr]() {
+    client->onConnect([peer_addr, client]() {
         printf("connect to [%s] success", peer_addr->toString().c_str());
+        std::shared_ptr<MyTinyRPC::StringProtocol> message = std::make_shared<MyTinyRPC::StringProtocol>();
+        message->info = "hello rpc";
+        client->writeMessage(message, [](MyTinyRPC::AbstractProtocol::s_ptr message_ptr){
+            printf("message send success\n");
+        });
     });
 }
 

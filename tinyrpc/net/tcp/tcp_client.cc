@@ -59,10 +59,8 @@ void TcpClient::onConnect(std::function<void()> done) {
                     m_event_loop->deleteEpollEvent(m_fd_event);
 
                     // 执行回调函数
-                    printf("begin done...\n");
                     if(done) {
                         done();
-                        printf("done success!\n");
                     }
                 } else {
                     ERRORLOG("conncet error, errno: %d, error: %s", errno, strerror(errno));

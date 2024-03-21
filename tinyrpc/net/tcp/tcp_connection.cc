@@ -21,7 +21,9 @@ TcpConnection::TcpConnection(EventLoop* event_loop, int fd, int buffer_size, Net
 }
 
 TcpConnection::~TcpConnection() {
-    
+    if(m_coder) {
+        delete m_coder;
+    }
 }
 
 void TcpConnection::onRead() {
@@ -63,7 +65,6 @@ void TcpConnection::onRead() {
 
     if(is_close) {
         INFOLOG("peer closed, peer addr [%s], clientfd [%d]", m_peer_addr->toString().c_str(), m_fd);
-        // TODO: 处理连接关闭事件
         clear();
         return;
     }
