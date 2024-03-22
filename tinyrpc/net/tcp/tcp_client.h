@@ -19,6 +19,10 @@ public:
     // 异步发送
     // 成功调用done函数, 传入AbstractProtocol::s_ptr的参数
     void writeMessage(AbstractProtocol::s_ptr request, std::function<void(AbstractProtocol::s_ptr)> done);
+    
+    // 异步读取
+    // 成功调用done函数, 传入AbstractProtocol::s_ptr的参数
+    void readMessage(const std::string& req_id, std::function<void(AbstractProtocol::s_ptr)> done);
 
 private:
     NetAddr::s_ptr m_peer_addr;

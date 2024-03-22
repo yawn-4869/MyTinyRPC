@@ -28,15 +28,14 @@ public:
 class StringCoder : public AbstractCoder {
 
 // 将message对象转化为字节流，写入到buffer
-void encode(const std::vector<AbstractProtocol*>& messages, TcpBuffer::s_ptr out_buffer) {
+void encode(const std::vector<AbstractProtocol::s_ptr>& messages, TcpBuffer::s_ptr out_buffer) {
     for(auto message : messages) {
-        StringProtocol* msg = dynamic_cast<StringProtocol*>(message);
+        std::shared_ptr<StringProtocol> msg = std::dynamic_pointer_cast<StringProtocol>(message);
         out_buffer->writeToBuffer(msg->info.c_str(), msg->info.length());
     }
 }
 // 将buffer中的字节流转化为message对象 
-void decode(std::vector<AbstractProtocol*>& out_messages, const TcpBuffer::s_ptr buffer) {
-    StringProtocol* msg = new StringProtocol();
+void decode(std::vector<AbstractProtocol::s_ptr>& out_messages, const TcpBuffer::s_ptr buffer) {
     std::vector<char> tmp;
     buffer->readFromBuffer(tmp, buffer->readAble());
     std::string str;
@@ -44,7 +43,9 @@ void decode(std::vector<AbstractProtocol*>& out_messages, const TcpBuffer::s_ptr
         str += c;
     }
 
+    std::shared_ptr<StringProtocol> msg = std::make_shared<StringProtocol>();
     msg->info = str;
+    msg->setReqId("123456");
     out_messages.push_back(msg);
 }
 

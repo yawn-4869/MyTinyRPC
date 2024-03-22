@@ -263,4 +263,6 @@ connect: 采用非阻塞方式连接对端机器(异步)
 write: connect成功后, 把message对象写入到Connection中buffer中,监听可写事件
 对于客户端的write函数，将请求与对应的函数写入到TcpConnection中的m_dones中后，再由TcpConnection的onWrite函数进行编码
 编码完成后，push进buffer
+
+read: 
 ```

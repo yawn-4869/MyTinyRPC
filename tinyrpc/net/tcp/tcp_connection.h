@@ -26,7 +26,8 @@ class TcpConnection {
 public:
 
     typedef std::shared_ptr<TcpConnection> s_ptr;
-    TcpConnection(EventLoop* event_loop, int fd, int buffer_size, NetAddr::s_ptr peer_addr, NetAddr::s_ptr local_addr);
+    TcpConnection(EventLoop* event_loop, int fd, int buffer_size, NetAddr::s_ptr peer_addr, NetAddr::s_ptr local_addr, 
+    TcpConnectionType connection_type);
     ~TcpConnection();
 
     void onRead();
@@ -34,6 +35,7 @@ public:
     void onWrite();
     void shutDown(); // 服务器主动关闭
     void pushSendMessage(AbstractProtocol::s_ptr message, std::function<void(AbstractProtocol::s_ptr)> done);
+    void pushReadMessage(const std::string& message, std::function<void(AbstractProtocol::s_ptr)> done);
 
     void setState(const TcpState& state) { // 设置连接状态
         m_state = state;
@@ -47,9 +49,9 @@ public:
     }
 
     void listenWrite(); // 监听写事件
+    void listenRead(); // 监听读事件
 
 private:
-    void listenRead(); // 监听读事件
     void clear(); // 清理连接断开后的事件
 
 private:
@@ -70,6 +72,8 @@ private:
 
     // 存储请求和对应的回调函数
     std::vector<std::pair<AbstractProtocol::s_ptr, std::function<void(AbstractProtocol::s_ptr)>>> m_write_dones;
+    // 
+    std::map<std::string, std::function<void(AbstractProtocol::s_ptr)>> m_read_dones;
 };
 
 }

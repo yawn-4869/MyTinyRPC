@@ -33,10 +33,10 @@ void Logger::init() {
 
 void Logger::pushLog(const std::string msg) {
     // m_buffer.push(msg);
-    // printf(msg.c_str());
-    ScopeLocker<Mutex> lck(m_mutex);
-    m_buffer.push_back(msg);
-    lck.unlock();
+    printf(msg.c_str());
+    // ScopeLocker<Mutex> lck(m_mutex);
+    // m_buffer.push_back(msg);
+    // lck.unlock();
 }
 
 void Logger::log() {
@@ -148,9 +148,9 @@ void* AsyncLogger::Loop(void* arg) {
 
         std::stringstream ss;
         ss << async_logger->m_file_path << async_logger->m_file_name << "_"
-        << async_logger->m_date << "_log_";
+        << async_logger->m_date << "_";
         
-        std::string log_file_name = ss.str() + std::to_string(async_logger->m_no);
+        std::string log_file_name = ss.str() + std::to_string(async_logger->m_no) + ".log";
         if(async_logger->m_reopen_flag) {
             if(async_logger->m_file_handler) {
                 fclose(async_logger->m_file_handler);
@@ -161,7 +161,7 @@ void* AsyncLogger::Loop(void* arg) {
         
         if(ftell(async_logger->m_file_handler) >= async_logger->m_max_file_size) {
             fclose(async_logger->m_file_handler);
-            log_file_name = ss.str() + std::to_string(async_logger->m_no++);
+            log_file_name = ss.str() + std::to_string(async_logger->m_no++) + ".log";
             async_logger->m_file_handler = fopen(log_file_name.c_str(), "a");
 
             async_logger->m_reopen_flag = false;

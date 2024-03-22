@@ -35,7 +35,7 @@ void TcpServer::onAccept() {
     NetAddr::s_ptr client_addr = client.second;
 
     TcpConnection::s_ptr connection = std::make_shared<TcpConnection>(
-        m_io_thread_pool->getIOThread()->getEventLoop(), client_fd, 128, client_addr, m_local_addr);
+        m_io_thread_pool->getIOThread()->getEventLoop(), client_fd, 128, client_addr, m_local_addr, TcpConnectionByServer);
     connection->setState(Connected);
     m_clients.insert(connection);
 

@@ -17,8 +17,8 @@ TcpClient::TcpClient(NetAddr::s_ptr local_addr, NetAddr::s_ptr peer_addr) : m_pe
     m_fd_event = FdEventPool::GetFdEventPool()->getFdEvent(m_fd);
     m_fd_event->setNonBlock();
 
-    m_connection = std::make_shared<TcpConnection>(m_event_loop, m_fd, 128, m_peer_addr, m_local_addr);
-    m_connection->setConnectionType(TcpConnectionByClient);
+    m_connection = std::make_shared<TcpConnection>(m_event_loop, m_fd, 128, m_peer_addr, m_local_addr, TcpConnectionByClient);
+    // m_connection->setConnectionType(TcpConnectionByClient);
 }
 
 TcpClient::~TcpClient() {
@@ -82,5 +82,13 @@ void TcpClient::writeMessage(AbstractProtocol::s_ptr request, std::function<void
     m_connection->pushSendMessage(request, done);
     m_connection->listenWrite();
 }
+
+void TcpClient::readMessage(const std::string& req_id, std::function<void(AbstractProtocol::s_ptr)> done) {
+    // 1. 监听可读事件
+    // 2. 从buffer中decode得到message对象, 判断req_id是否相等, 相等则成功
+    m_connection->pushReadMessage(req_id, done);
+    m_connection->listenRead();
+}
+
 
 }

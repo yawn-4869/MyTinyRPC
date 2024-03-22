@@ -4,8 +4,8 @@
 
 namespace MyTinyRPC {
 
-TcpConnection::TcpConnection(EventLoop* event_loop, int fd, int buffer_size, NetAddr::s_ptr peer_addr, NetAddr::s_ptr local_addr) 
-    : m_event_loop(event_loop), m_fd(fd), m_state(NotConnected), m_peer_addr(peer_addr), m_local_addr(local_addr) {
+TcpConnection::TcpConnection(EventLoop* event_loop, int fd, int buffer_size, NetAddr::s_ptr peer_addr, NetAddr::s_ptr local_addr, TcpConnectionType connection_type) 
+    : m_event_loop(event_loop), m_fd(fd), m_state(NotConnected), m_peer_addr(peer_addr), m_local_addr(local_addr), m_connection_type(connection_type) {
     m_in_buffer = std::make_shared<TcpBuffer>(buffer_size);
     m_out_buffer = std::make_shared<TcpBuffer>(buffer_size);
 
@@ -78,21 +78,36 @@ void TcpConnection::onRead() {
 }
 
 void TcpConnection::excute() {
-    // 读取in_buffer中的数据
-    std::vector<char> result;
-    int read_count = m_in_buffer->readAble();
-    m_in_buffer->readFromBuffer(result, read_count);
+    if(m_connection_type == TcpConnectionByServer) {
+        // server
+        // 读取in_buffer中的数据
+        std::vector<char> result;
+        int read_count = m_in_buffer->readAble();
+        m_in_buffer->readFromBuffer(result, read_count);
 
-    // TODO: 将读取到的数据解析成rpc报文, 执行处理逻辑, 生成响应报文
-    // 目前只是简单的读取和写入
-    std::string msg;
-    for(int i = 0; i < read_count; ++i) {
-        msg += result[i];
+        // TODO: 将读取到的数据解析成rpc报文, 执行处理逻辑, 生成响应报文
+        // 目前只是简单的读取和写入
+        std::string msg;
+        for(int i = 0; i < read_count; ++i) {
+            msg += result[i];
+        }
+        m_out_buffer->writeToBuffer(msg.c_str(), msg.length());
+        INFOLOG("success get request [%s] from client [%s], clientfd [%d]", msg.c_str(), m_peer_addr->toString().c_str(), m_fd);
+
+        listenWrite(); // 监听可读事件, 执行onWrite将响应报文写入out_buffer
+    } else {
+        // client
+        // 从buffer中读取request对象, decode, 判断req_id是否一致
+        std::vector<AbstractProtocol::s_ptr> result;
+        m_coder->decode(result, m_in_buffer);
+        for(auto request : result) {
+            std::string req_id = request->getReqId();
+            auto it = m_read_dones.find(req_id);
+            if(it != m_read_dones.end()) {
+                it->second(request);
+            }
+        }
     }
-    m_out_buffer->writeToBuffer(msg.c_str(), msg.length());
-    INFOLOG("success get request [%s] from client [%s], clientfd [%d]", msg.c_str(), m_peer_addr->toString().c_str(), m_fd);
-
-    listenWrite(); // 监听可读事件, 执行onWrite将响应报文写入out_buffer
 }
 
 void TcpConnection::onWrite() {
@@ -102,12 +117,12 @@ void TcpConnection::onWrite() {
         return;
     }
 
-    std::vector<AbstractProtocol*> messages;
+    std::vector<AbstractProtocol::s_ptr> messages;
     if(m_connection_type == TcpConnectionByClient) {
         // 如果是客户端连接, 将所有的message写入buffer
         // 1. message序列化(编码) 2. 保存到buffer 3. 读取buffer, 发送(已完成)
         for(int i = 0; i < m_write_dones.size(); ++i) {
-            messages.push_back(m_write_dones[i].first.get());
+            messages.push_back(m_write_dones[i].first);
         }
 
         m_coder->encode(messages, m_out_buffer);
@@ -171,6 +186,11 @@ void TcpConnection::shutDown() {
 void TcpConnection::pushSendMessage(AbstractProtocol::s_ptr message, std::function<void(AbstractProtocol::s_ptr)> done) {
     m_write_dones.push_back(std::make_pair(message, done));
 }
+
+void TcpConnection::pushReadMessage(const std::string& message, std::function<void(AbstractProtocol::s_ptr)> done) {
+    m_read_dones.insert(std::make_pair(message, done));
+}
+
 
 void TcpConnection::listenRead() {
     m_fd_event->listen(FdEvent::IN_EVENT, std::bind(&TcpConnection::onRead, this));
