@@ -266,3 +266,37 @@ write: connect成功后, 把message对象写入到Connection中buffer中,监听�
 
 read: 
 ```
+
+### Rpc模块设计 20240322
+#### RpcDecoder
+
+自定义了一个tinyrpc的协议格式, 便于对请求进行分割(请求开始和结束的界限)、匹配对应的请求和响应、定位错误信息
+
+主要是为了解决粘包问题
+```
+虽然我们可以通过protobuf将请求进行序列化后发送序列化后的结果
+
+但是由于Tcp是字节流的方式传输, 没有包的概念, 因此protobuf序列化后的结果只是一串没有意义的字符流
+
+因此需要实现RpcDecoder
+```
+
+1. TinyPB协议
+
+```
+开始符: 固定, 0x02 char
+包长度: 整包字节数, 包括开始和结束符 int32
+MsgID长度: length of MsgID int32
+MsgID: rpc请求的唯一标识, 请求和响应的MsgIDy应当一致 string
+方法名长度: length of method name int32
+方法名: rpc方法的完整名 string
+错误码: 若rpc调用发生系统异常, 设置错误码, 正常情况下为0 int32
+错误信息长度: length of error msg, 正常情况为0 int32
+错误信息: rpc调用异常的详细错误信息 string
+数据: protobuf序列化后的实际数据(字符串保存) string
+校验和: 对整包进行校验, 用于防篡改, 校验算法待定
+结束码: 固定, 0x03
+```
+
+由于需要进行数据的序列化和反序列化, 因此将协议通过struct存储
+使用网络字节序(大端存储)

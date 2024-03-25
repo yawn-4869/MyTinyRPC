@@ -1,6 +1,9 @@
-#include "util.h"
+#include <string.h>
 #include <sys/syscall.h>
 #include <sys/time.h>
+#include <arpa/inet.h>
+
+#include "util.h"
 
 
 namespace MyTinyRPC {
@@ -28,6 +31,12 @@ int64_t getNowMs() {
     timeval tv;
     gettimeofday(&tv, NULL);
     return tv.tv_sec * 1000 + tv.tv_usec / 1000;
+}
+
+int32_t getInt32FromNetByte(const char* buf) {
+    int32_t tmp;
+    memcpy(&tmp, buf, sizeof(tmp));
+    return ntohl(tmp);
 }
 
 }

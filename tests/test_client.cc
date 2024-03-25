@@ -5,6 +5,7 @@
 #include "tinyrpc/common/config.h"
 #include "tinyrpc/net/tcp/tcp_client.h"
 #include "tinyrpc/net/coder/abstract_protocol.h"
+#include "tinyrpc/net/coder/tinypb_coder.h"
 
 void test_connect() {
     // 调用connect连接server
@@ -43,15 +44,15 @@ void test_client() {
     MyTinyRPC::TcpClient::s_ptr client = std::make_shared<MyTinyRPC::TcpClient>(nullptr, peer_addr);
     client->onConnect([peer_addr, client]() {
         DEBUGLOG("connect to [%s] success", peer_addr->toString().c_str());
-        std::shared_ptr<MyTinyRPC::StringProtocol> message = std::make_shared<MyTinyRPC::StringProtocol>();
-        message->info = "hello rpc";
-        message->setReqId("123456");
+        std::shared_ptr<MyTinyRPC::TinyPBProtocol> message = std::make_shared<MyTinyRPC::TinyPBProtocol>();
+        message->setReqId("123456789");
+        message->m_pb_data = "test pb data";
         client->writeMessage(message, [](MyTinyRPC::AbstractProtocol::s_ptr message_ptr){
             DEBUGLOG("message send success\n");
         });
-        client->readMessage("123456", [](MyTinyRPC::AbstractProtocol::s_ptr msg_ptr){
-            std::shared_ptr<MyTinyRPC::StringProtocol> message = std::dynamic_pointer_cast<MyTinyRPC::StringProtocol>(msg_ptr);
-            DEBUGLOG("req_id[%s], get response: %s", message->getReqId().c_str(), message->getInfo().c_str());
+        client->readMessage("123456789", [](MyTinyRPC::AbstractProtocol::s_ptr msg_ptr){
+            std::shared_ptr<MyTinyRPC::TinyPBProtocol> message = std::dynamic_pointer_cast<MyTinyRPC::TinyPBProtocol>(msg_ptr);
+            DEBUGLOG("req_id[%s], get response: %s", message->getReqId().c_str(), message->m_pb_data.c_str());
         });
     });
 }

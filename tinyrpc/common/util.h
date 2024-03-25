@@ -6,11 +6,13 @@
 
 namespace MyTinyRPC {
 
-pid_t getPid();
+pid_t getPid(); // 获取进程id
 
-pid_t getThreadId();
+pid_t getThreadId(); // 获取线程id
 
-int64_t getNowMs();
+int64_t getNowMs(); // 获取当前时间
+
+int32_t getInt32FromNetByte(const char* buf); // 转成网络字节序
 
 }
 

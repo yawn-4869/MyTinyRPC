@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include "tinyrpc/net/tcp/tcp_connection.h"
 #include "tinyrpc/common/log.h"
+#include "tinyrpc/net/coder/tinypb_coder.h"
 
 namespace MyTinyRPC {
 
@@ -12,7 +13,7 @@ TcpConnection::TcpConnection(EventLoop* event_loop, int fd, int buffer_size, Net
     m_fd_event = FdEventPool::GetFdEventPool()->getFdEvent(fd);
     m_fd_event->setNonBlock();
 
-    m_coder = new StringCoder();
+    m_coder = new TinyPBCoder();
 
     // 服务端一直监听读事件
     if(m_connection_type == TcpConnectionByServer) {
