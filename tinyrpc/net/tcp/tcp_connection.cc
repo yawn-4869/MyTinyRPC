@@ -82,18 +82,34 @@ void TcpConnection::excute() {
     if(m_connection_type == TcpConnectionByServer) {
         // server
         // 读取in_buffer中的数据
-        std::vector<char> result;
-        int read_count = m_in_buffer->readAble();
-        m_in_buffer->readFromBuffer(result, read_count);
+        // std::vector<char> result;
+        // int read_count = m_in_buffer->readAble();
+        // m_in_buffer->readFromBuffer(result, read_count);
 
-        // TODO: 将读取到的数据解析成rpc报文, 执行处理逻辑, 生成响应报文
-        // 目前只是简单的读取和写入
-        std::string msg;
-        for(int i = 0; i < read_count; ++i) {
-            msg += result[i];
+        std::vector<AbstractProtocol::s_ptr> results;
+        std::vector<AbstractProtocol::s_ptr> responses;
+        m_coder->decode(results, m_in_buffer);
+
+        for(int i = 0; i < results.size(); ++i) {
+            // 对于每一个request, 调用rpc方法, 获取response
+            // 将response放入到发送缓冲区, 监听可写事件
+            INFOLOG("success get request [%s] from client [%s], clientfd [%d]", results[i]->m_req_id.c_str(), 
+            m_peer_addr->toString().c_str(), m_fd);
+
+            std::shared_ptr<TinyPBProtocol> message = std::make_shared<TinyPBProtocol>();
+            message->m_pb_data = "hello, this is rpc response test data";
+            message->m_req_id = results[i]->m_req_id;
+
+            responses.emplace_back(message);
         }
-        m_out_buffer->writeToBuffer(msg.c_str(), msg.length());
-        INFOLOG("success get request [%s] from client [%s], clientfd [%d]", msg.c_str(), m_peer_addr->toString().c_str(), m_fd);
+
+        m_coder->encode(responses, m_out_buffer);
+
+        // std::string msg;
+        // for(int i = 0; i < read_count; ++i) {
+        //     msg += result[i];
+        // }
+        // m_out_buffer->writeToBuffer(msg.c_str(), msg.length());
 
         listenWrite(); // 监听可读事件, 执行onWrite将响应报文写入out_buffer
     } else {
