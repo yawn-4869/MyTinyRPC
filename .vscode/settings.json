@@ -36,6 +36,11 @@
         "unordered_set": "cpp",
         "cfenv": "cpp",
         "numeric": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "chrono": "cpp",
+        "ctime": "cpp",
+        "mutex": "cpp",
+        "ratio": "cpp",
+        "system_error": "cpp"
     }
 }

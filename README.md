@@ -281,7 +281,7 @@ read:
 因此需要实现RpcDecoder
 ```
 
-1. TinyPB协议
+TinyPB协议
 
 ```
 开始符: 固定, 0x02 char
@@ -300,3 +300,13 @@ MsgID: rpc请求的唯一标识, 请求和响应的MsgIDy应当一致 string
 
 由于需要进行数据的序列化和反序列化, 因此将协议通过struct存储
 使用网络字节序(大端存储)
+
+#### RpcDispatcher
+
+
+#### RpcController
+功能介绍: 
+
+继承自google::protobuf::RpcController类
+
+在rpc调用过程中可以通过controller获取rpc调用的某些信息, 方便进行错误处理和debug

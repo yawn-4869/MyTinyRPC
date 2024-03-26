@@ -7,6 +7,7 @@
 #include "tinyrpc/net/fd_event_pool.h"
 #include "tinyrpc/net/coder/abstract_protocol.h"
 #include "tinyrpc/net/coder/string_coder.h"
+#include "tinyrpc/net/rpc/rpc_dispatcher.h"
 
 namespace MyTinyRPC {
 
@@ -48,6 +49,9 @@ public:
         m_connection_type = type;
     }
 
+    NetAddr::s_ptr getLocalAddr();
+    NetAddr::s_ptr getPeerAddr();
+
     void listenWrite(); // 监听写事件
     void listenRead(); // 监听读事件
 
@@ -69,6 +73,7 @@ private:
     TcpConnectionType m_connection_type{ TcpConnectionByServer };
 
     AbstractCoder* m_coder;
+    std::shared_ptr<RpcDisPatcher> m_dispatcher;
 
     // 存储请求和对应的回调函数
     std::vector<std::pair<AbstractProtocol::s_ptr, std::function<void(AbstractProtocol::s_ptr)>>> m_write_dones;

@@ -18,6 +18,8 @@ TcpConnection::TcpConnection(EventLoop* event_loop, int fd, int buffer_size, Net
     // 服务端一直监听读事件
     if(m_connection_type == TcpConnectionByServer) {
         listenRead();
+        // server需要dispatcher生成request对应的response
+        m_dispatcher = std::make_shared<RpcDisPatcher>();
     }
 }
 
@@ -95,10 +97,12 @@ void TcpConnection::excute() {
             // 将response放入到发送缓冲区, 监听可写事件
             INFOLOG("success get request [%s] from client [%s], clientfd [%d]", results[i]->m_req_id.c_str(), 
             m_peer_addr->toString().c_str(), m_fd);
-
             std::shared_ptr<TinyPBProtocol> message = std::make_shared<TinyPBProtocol>();
-            message->m_pb_data = "hello, this is rpc response test data";
-            message->m_req_id = results[i]->m_req_id;
+            m_dispatcher->dispatch(results[i], message);
+
+            // std::shared_ptr<TinyPBProtocol> message = std::make_shared<TinyPBProtocol>();
+            // message->m_pb_data = "hello, this is rpc response test data";
+            // message->m_req_id = results[i]->m_req_id;
 
             responses.emplace_back(message);
         }
@@ -233,6 +237,13 @@ void TcpConnection::clear() {
 
     // 设置state为Closed, 因为是客户端关闭了, 所以状态为Closed
     m_state = Closed;
+}
+
+NetAddr::s_ptr TcpConnection::getLocalAddr() {
+    return m_local_addr;
+}
+NetAddr::s_ptr TcpConnection::getPeerAddr() {
+    return m_peer_addr;
 }
 
 }
