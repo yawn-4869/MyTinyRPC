@@ -4,14 +4,16 @@
 #include <map>
 #include <google/protobuf/service.h>
 #include "tinyrpc/net/coder/tinypb_protocol.h"
-#include "tinyrpc/net/tcp/tcp_connection.h"
 
 namespace MyTinyRPC {
+
+class TcpConnection;
+
 class RpcDisPatcher {
 public:
     typedef std::shared_ptr<google::protobuf::Service> service_s_ptr;
     // 根据对应的请求生成对应的rpc方法, 并发送相应信息
-    void dispatch(AbstractProtocol::s_ptr request, AbstractProtocol::s_ptr response, TcpConnection::s_ptr connection);
+    void dispatch(AbstractProtocol::s_ptr request, AbstractProtocol::s_ptr response, TcpConnection* connection);
     // 注册服务对象
     void registerService(service_s_ptr service);
     void setTinyPBError(std::shared_ptr<TinyPBProtocol> msg, int32_t error_code, std::string error_info);

@@ -5,10 +5,11 @@
 #include "tinyrpc/common/log.h"
 #include "tinyrpc/common/error_code.h"
 #include "tinyrpc/net/rpc/rpc_controller.h"
+#include "tinyrpc/net/tcp/tcp_connection.h"
 
 namespace MyTinyRPC {
 
-void RpcDisPatcher::dispatch(AbstractProtocol::s_ptr request, AbstractProtocol::s_ptr response, TcpConnection::s_ptr connection) {
+void RpcDisPatcher::dispatch(AbstractProtocol::s_ptr request, AbstractProtocol::s_ptr response, TcpConnection* connection) {
     std::shared_ptr<TinyPBProtocol> req_protocol = std::dynamic_pointer_cast<TinyPBProtocol>(request);
     std::shared_ptr<TinyPBProtocol> rsp_protocol = std::dynamic_pointer_cast<TinyPBProtocol>(response);
     // 根据请求体得到method_name
@@ -70,6 +71,11 @@ void RpcDisPatcher::dispatch(AbstractProtocol::s_ptr request, AbstractProtocol::
     rsp_protocol->m_error_code = 0;
     INFOLOG("%s | dispatch success, request[%s], response[%s]", req_protocol->m_req_id.c_str(),
     req_msg->ShortDebugString().c_str(), rsp_msg->ShortDebugString().c_str());
+
+    delete req_msg;
+    delete rsp_msg;
+    req_msg = NULL;
+    rsp_msg = NULL;
 }
 
 void RpcDisPatcher::registerService(service_s_ptr service) {

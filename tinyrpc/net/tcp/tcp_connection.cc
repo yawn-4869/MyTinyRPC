@@ -98,7 +98,7 @@ void TcpConnection::excute() {
             INFOLOG("success get request [%s] from client [%s], clientfd [%d]", results[i]->m_req_id.c_str(), 
             m_peer_addr->toString().c_str(), m_fd);
             std::shared_ptr<TinyPBProtocol> message = std::make_shared<TinyPBProtocol>();
-            m_dispatcher->dispatch(results[i], message);
+            m_dispatcher->dispatch(results[i], message, this);
 
             // std::shared_ptr<TinyPBProtocol> message = std::make_shared<TinyPBProtocol>();
             // message->m_pb_data = "hello, this is rpc response test data";
