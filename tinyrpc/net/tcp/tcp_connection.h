@@ -73,7 +73,6 @@ private:
     TcpConnectionType m_connection_type{ TcpConnectionByServer };
 
     AbstractCoder* m_coder;
-    std::shared_ptr<RpcDisPatcher> m_dispatcher;
 
     // 存储请求和对应的回调函数
     std::vector<std::pair<AbstractProtocol::s_ptr, std::function<void(AbstractProtocol::s_ptr)>>> m_write_dones;

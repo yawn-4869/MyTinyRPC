@@ -302,7 +302,21 @@ MsgID: rpc请求的唯一标识, 请求和响应的MsgIDy应当一致 string
 使用网络字节序(大端存储)
 
 #### RpcDispatcher
+功能介绍：用于服务端与客户端的通信, 服务端根据客户端传递过来的请求, 通过dispatcher生成对应的响应, 发送给客户端
 
+流程：
+read -> decode -> (request) -> dispatcher -> (response) -> encode -> write
+
+```
+启动的时候就注册OrderService 对象。
+
+
+1. 从buffer读取数据，然后 decode 得到请求的 TinyPBProtobol 对象。然后从请求的 TinyPBProtobol 得到 method_name, 从 OrderService 对象里根据 service.method_name 找到方法 func
+2. 找到对应的 requeset type 以及 response type
+3. 将请求体 TinyPBProtobol 里面的 pb_date 反序列化为 requeset type 的一个对象, 声明一个空的 response type 对象
+4. func(request, response)
+5. 将 reponse 对象序列为 pb_data。 再塞入到 TinyPBProtobol 结构体中。做 encode 然后塞入到buffer里面，就会发送回包了
+```
 
 #### RpcController
 功能介绍: 

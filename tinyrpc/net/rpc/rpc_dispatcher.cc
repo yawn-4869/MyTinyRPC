@@ -9,6 +9,15 @@
 
 namespace MyTinyRPC {
 
+static RpcDisPatcher* g_rpc_dispatcher = NULL;
+RpcDisPatcher* RpcDisPatcher::GetRpcDispatcher() {
+    if(g_rpc_dispatcher) {
+        return g_rpc_dispatcher;
+    }
+    g_rpc_dispatcher = new RpcDisPatcher();
+    return g_rpc_dispatcher;
+}
+
 void RpcDisPatcher::dispatch(AbstractProtocol::s_ptr request, AbstractProtocol::s_ptr response, TcpConnection* connection) {
     std::shared_ptr<TinyPBProtocol> req_protocol = std::dynamic_pointer_cast<TinyPBProtocol>(request);
     std::shared_ptr<TinyPBProtocol> rsp_protocol = std::dynamic_pointer_cast<TinyPBProtocol>(response);
