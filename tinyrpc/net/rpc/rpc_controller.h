@@ -53,7 +53,7 @@ public:
 private:
     int32_t m_error_code;
     std::string m_error_info;
-    std::string m_req_id;
+    std::string m_msg_id;
 
     bool m_is_failed{ false };
     bool m_is_canceled{ false };

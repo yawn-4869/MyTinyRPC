@@ -9,7 +9,7 @@ namespace MyTinyRPC{
 class TcpClient {
 public:
     typedef std::shared_ptr<TcpClient> s_ptr;
-    TcpClient(NetAddr::s_ptr local_addr, NetAddr::s_ptr peer_addr);
+    TcpClient(NetAddr::s_ptr peer_addr, NetAddr::s_ptr local_addr = nullptr);
     ~TcpClient();
 
     // 异步connect
@@ -22,7 +22,10 @@ public:
     
     // 异步读取
     // 成功调用done函数, 传入AbstractProtocol::s_ptr的参数
-    void readMessage(const std::string& req_id, std::function<void(AbstractProtocol::s_ptr)> done);
+    void readMessage(const std::string& msg_id, std::function<void(AbstractProtocol::s_ptr)> done);
+
+    // 结束eventloop
+    void stop();
 
 private:
     NetAddr::s_ptr m_peer_addr;

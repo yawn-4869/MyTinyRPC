@@ -6,7 +6,7 @@
 
 namespace MyTinyRPC {
 
-TcpClient::TcpClient(NetAddr::s_ptr local_addr, NetAddr::s_ptr peer_addr) : m_peer_addr(peer_addr), m_local_addr(local_addr) {
+TcpClient::TcpClient(NetAddr::s_ptr peer_addr, NetAddr::s_ptr local_addr) : m_peer_addr(peer_addr), m_local_addr(local_addr) {
     m_event_loop = EventLoop::GetCurrentEventLoop();
     m_fd = socket(m_peer_addr->getFamily(), SOCK_STREAM, 0);
     if(m_fd < 0) {
@@ -83,11 +83,17 @@ void TcpClient::writeMessage(AbstractProtocol::s_ptr request, std::function<void
     m_connection->listenWrite();
 }
 
-void TcpClient::readMessage(const std::string& req_id, std::function<void(AbstractProtocol::s_ptr)> done) {
+void TcpClient::readMessage(const std::string& msg_id, std::function<void(AbstractProtocol::s_ptr)> done) {
     // 1. 监听可读事件
-    // 2. 从buffer中decode得到message对象, 判断req_id是否相等, 相等则成功
-    m_connection->pushReadMessage(req_id, done);
+    // 2. 从buffer中decode得到message对象, 判断msg_id是否相等, 相等则成功
+    m_connection->pushReadMessage(msg_id, done);
     m_connection->listenRead();
+}
+
+void TcpClient::stop() {
+    if(m_event_loop->isLooping()) {
+        m_event_loop->stop();
+    }
 }
 
 

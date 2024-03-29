@@ -318,6 +318,14 @@ read -> decode -> (request) -> dispatcher -> (response) -> encode -> write
 5. 将 reponse 对象序列为 pb_data。 再塞入到 TinyPBProtobol 结构体中。做 encode 然后塞入到buffer里面，就会发送回包了
 ```
 
+#### RpcChannel
+功能介绍：用于客户端与服务端的通信流程封装
+
+流程:
+connect -> (request) -> encode -> write -> read -> decode -> (response)
+
+
+
 #### RpcController
 功能介绍: 
 

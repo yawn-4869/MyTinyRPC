@@ -41,7 +41,7 @@ void test_connect() {
 void test_client() {
     // MyTinyRPC::IPNetAddr::s_ptr local_addr = std::make_shared<MyTinyRPC::IPNetAddr>("127.0.0.1", 12346);
     MyTinyRPC::IPNetAddr::s_ptr peer_addr = std::make_shared<MyTinyRPC::IPNetAddr>("127.0.0.1", 12345);
-    MyTinyRPC::TcpClient::s_ptr client = std::make_shared<MyTinyRPC::TcpClient>(nullptr, peer_addr);
+    MyTinyRPC::TcpClient::s_ptr client = std::make_shared<MyTinyRPC::TcpClient>(peer_addr);
     client->onConnect([peer_addr, client]() {
         DEBUGLOG("connect to [%s] success", peer_addr->toString().c_str());
         std::shared_ptr<MyTinyRPC::TinyPBProtocol> message = std::make_shared<MyTinyRPC::TinyPBProtocol>();
@@ -52,7 +52,7 @@ void test_client() {
         });
         client->readMessage("123456789", [](MyTinyRPC::AbstractProtocol::s_ptr msg_ptr){
             std::shared_ptr<MyTinyRPC::TinyPBProtocol> message = std::dynamic_pointer_cast<MyTinyRPC::TinyPBProtocol>(msg_ptr);
-            DEBUGLOG("req_id[%s], get response: %s", message->getReqId().c_str(), message->m_pb_data.c_str());
+            DEBUGLOG("msg_id[%s], get response: %s", message->getReqId().c_str(), message->m_pb_data.c_str());
         });
     });
 }

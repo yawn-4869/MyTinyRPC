@@ -5,7 +5,7 @@ namespace MyTinyRPC {
 void RpcController::Reset() {
     m_error_code = 0;
     m_error_info = "";
-    m_req_id = "";
+    m_msg_id = "";
     m_is_failed = false;
     m_is_canceled = false;
     m_is_finished = false;
@@ -54,11 +54,11 @@ std::string RpcController::GetErrorInfo() {
 }
 
 void RpcController::SetMsgId(const std::string& msg_id) {
-    m_req_id = msg_id;
+    m_msg_id = msg_id;
 }
 
 std::string RpcController::GetMsgId() {
-    return m_req_id;
+    return m_msg_id;
 }
 
 void RpcController::SetLocalAddr(NetAddr::s_ptr addr) {

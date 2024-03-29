@@ -80,17 +80,17 @@ void TinyPBCoder::decode(std::vector<AbstractProtocol::s_ptr>& out_message, cons
                 continue;
             }
 
-            message->m_req_id_len = getInt32FromNetByte(&tmp[msg_id_len_index]);
+            message->m_msg_id_len = getInt32FromNetByte(&tmp[msg_id_len_index]);
 
             // id
-            int msg_id_index = msg_id_len_index + sizeof(message->m_req_id_len);
+            int msg_id_index = msg_id_len_index + sizeof(message->m_msg_id_len);
             char msg_id[128] = {0};
-            memcpy(msg_id, &tmp[msg_id_index], message->m_req_id_len);
-            message->m_req_id = std::string(msg_id);
-            DEBUGLOG("parse req_id=%s", message->m_req_id.c_str());
+            memcpy(msg_id, &tmp[msg_id_index], message->m_msg_id_len);
+            message->m_msg_id = std::string(msg_id);
+            DEBUGLOG("parse msg_id=%s", message->m_msg_id.c_str());
 
             // 方法名长度
-            int method_name_len_index = msg_id_index + message->m_req_id_len;
+            int method_name_len_index = msg_id_index + message->m_msg_id_len;
             if(method_name_len_index >= end_index) {
                 message->parse_success = false;
                 ERRORLOG("parse error, method_name_len_index[%d] >= end_index[%d]", method_name_len_index, end_index);
@@ -130,7 +130,7 @@ void TinyPBCoder::decode(std::vector<AbstractProtocol::s_ptr>& out_message, cons
             message->m_error_msg = std::string(error_info);
             DEBUGLOG("parse error_info=%s", message->m_error_msg.c_str());
 
-            int pb_data_len = message->m_pk_len - message->m_req_id_len - message->m_method_name_len - message->m_error_msg_len - 2 - 24;
+            int pb_data_len = message->m_pk_len - message->m_msg_id_len - message->m_method_name_len - message->m_error_msg_len - 2 - 24;
             int pb_data_index = error_info_index + message->m_error_msg_len;
             message->m_pb_data = std::string(&tmp[pb_data_index], pb_data_len);
             DEBUGLOG("parse pb_data=%s", message->m_pb_data.c_str());
@@ -144,12 +144,12 @@ void TinyPBCoder::decode(std::vector<AbstractProtocol::s_ptr>& out_message, cons
 }
 
 const char* TinyPBCoder::encodeTinyPB(TinyPBProtocol::s_ptr message, int& len) {
-    if(message->m_req_id.empty()) {
-        message->m_req_id = "12345678";
+    if(message->m_msg_id.empty()) {
+        message->m_msg_id = "12345678";
     }
 
     // 计算总包长度, 包的length字段有可能未被赋值
-    int pkg_len = 2 + 24 + message->m_req_id.length() + message->m_method_name.length() + 
+    int pkg_len = 2 + 24 + message->m_msg_id.length() + message->m_method_name.length() + 
     message->m_error_msg.length() + message->m_pb_data.length();
 
     char* buf = reinterpret_cast<char*>(malloc(pkg_len));
@@ -162,13 +162,13 @@ const char* TinyPBCoder::encodeTinyPB(TinyPBProtocol::s_ptr message, int& len) {
     memcpy(tmp, &pkg_len_net, sizeof(pkg_len_net));
     tmp += sizeof(pkg_len_net);
 
-    int32_t msg_id_len = message->m_req_id.length();
+    int32_t msg_id_len = message->m_msg_id.length();
     int32_t msg_id_len_net = htonl(msg_id_len);
     memcpy(tmp, &msg_id_len_net, sizeof(msg_id_len_net));
     tmp += sizeof(msg_id_len_net);
 
-    if(!message->m_req_id.empty()) {
-        memcpy(tmp, &(message->m_req_id[0]), msg_id_len);
+    if(!message->m_msg_id.empty()) {
+        memcpy(tmp, &(message->m_msg_id[0]), msg_id_len);
         tmp += msg_id_len;
     }
 
@@ -207,7 +207,7 @@ const char* TinyPBCoder::encodeTinyPB(TinyPBProtocol::s_ptr message, int& len) {
     tmp += sizeof(check_sum_net);
 
     message->m_pk_len = pkg_len;
-    message->m_req_id_len = msg_id_len;
+    message->m_msg_id_len = msg_id_len;
     message->m_method_name_len = method_name_len;
     message->m_error_msg_len = error_info_len;
     message->parse_success = true;
@@ -215,7 +215,7 @@ const char* TinyPBCoder::encodeTinyPB(TinyPBProtocol::s_ptr message, int& len) {
 
     *tmp = TinyPBProtocol::PB_END;
 
-    DEBUGLOG("encode message[%s] success",message->m_req_id.c_str());
+    DEBUGLOG("encode message[%s] success",message->m_msg_id.c_str());
 
     return buf;
 }

@@ -90,10 +90,10 @@ void TcpConnection::excute() {
         std::vector<AbstractProtocol::s_ptr> responses;
         m_coder->decode(results, m_in_buffer);
 
-        for(int i = 0; i < results.size(); ++i) {
+        for(size_t i = 0; i < results.size(); ++i) {
             // 对于每一个request, 调用rpc方法, 获取response
             // 将response放入到发送缓冲区, 监听可写事件
-            INFOLOG("success get request [%s] from client [%s], clientfd [%d]", results[i]->m_req_id.c_str(), 
+            INFOLOG("success get request [%s] from client [%s], clientfd [%d]", results[i]->m_msg_id.c_str(), 
             m_peer_addr->toString().c_str(), m_fd);
             std::shared_ptr<TinyPBProtocol> message = std::make_shared<TinyPBProtocol>();
             RpcDisPatcher::GetRpcDispatcher()->dispatch(results[i], message, this);
@@ -101,7 +101,7 @@ void TcpConnection::excute() {
 
             // std::shared_ptr<TinyPBProtocol> message = std::make_shared<TinyPBProtocol>();
             // message->m_pb_data = "hello, this is rpc response test data";
-            // message->m_req_id = results[i]->m_req_id;
+            // message->m_msg_id = results[i]->m_msg_id;
 
             responses.emplace_back(message);
         }
@@ -117,12 +117,12 @@ void TcpConnection::excute() {
         listenWrite(); // 监听可读事件, 执行onWrite将响应报文写入out_buffer
     } else {
         // client
-        // 从buffer中读取request对象, decode, 判断req_id是否一致
+        // 从buffer中读取request对象, decode, 判断msg_id是否一致
         std::vector<AbstractProtocol::s_ptr> result;
         m_coder->decode(result, m_in_buffer);
         for(auto request : result) {
-            std::string req_id = request->getReqId();
-            auto it = m_read_dones.find(req_id);
+            std::string msg_id = request->getReqId();
+            auto it = m_read_dones.find(msg_id);
             if(it != m_read_dones.end()) {
                 it->second(request);
             }
@@ -141,7 +141,7 @@ void TcpConnection::onWrite() {
     if(m_connection_type == TcpConnectionByClient) {
         // 如果是客户端连接, 将所有的message写入buffer
         // 1. message序列化(编码) 2. 保存到buffer 3. 读取buffer, 发送(已完成)
-        for(int i = 0; i < m_write_dones.size(); ++i) {
+        for(size_t i = 0; i < m_write_dones.size(); ++i) {
             messages.push_back(m_write_dones[i].first);
         }
 
@@ -183,7 +183,7 @@ void TcpConnection::onWrite() {
 
     if(m_connection_type == TcpConnectionByClient) {
         // 执行回调函数
-        for(int i = 0; i < m_write_dones.size(); ++i) {
+        for(size_t i = 0; i < m_write_dones.size(); ++i) {
             m_write_dones[i].second(m_write_dones[i].first);
         }
 

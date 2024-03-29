@@ -11,17 +11,17 @@ public:
     typedef std::shared_ptr<AbstractProtocol> s_ptr;
 
     std::string getReqId() {
-        return m_req_id;
+        return m_msg_id;
     }
 
     void setReqId(std::string id) {
-        m_req_id = id;
+        m_msg_id = id;
     }
 
     virtual ~AbstractProtocol() {};
 
 public:
-    std::string m_req_id; // 请求号, 唯一的标识一个请求或响应
+    std::string m_msg_id; // 请求号, 唯一的标识一个请求或响应
 };
 
 }
