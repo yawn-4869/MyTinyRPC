@@ -11,6 +11,7 @@ public:
     typedef std::shared_ptr<TcpClient> s_ptr;
     TcpClient(NetAddr::s_ptr peer_addr, NetAddr::s_ptr local_addr = nullptr);
     ~TcpClient();
+    void initLocalAddr();
 
     // 异步connect
     // connect成功, 调用done函数
@@ -27,6 +28,14 @@ public:
     // 结束eventloop
     void stop();
 
+    int getErrorCode();
+
+    std::string getErrorInfo();
+
+    NetAddr::s_ptr getPeerAddr();
+
+    NetAddr::s_ptr getLocalAddr();
+
 private:
     NetAddr::s_ptr m_peer_addr;
     NetAddr::s_ptr m_local_addr;
@@ -34,6 +43,9 @@ private:
     int m_fd{ -1 };
     FdEvent* m_fd_event;
     TcpConnection::s_ptr m_connection;
+
+    int m_error_code{ 0 };
+    std::string m_error_info;
 };
 
 }

@@ -3,6 +3,7 @@
 #include <string.h>
 #include "tinyrpc/net/tcp/tcp_client.h"
 #include "tinyrpc/common/log.h"
+#include "tinyrpc/common/error_code.h"
 
 namespace MyTinyRPC {
 
@@ -35,11 +36,24 @@ TcpClient::~TcpClient() {
     }
 }
 
+void TcpClient::initLocalAddr() {
+    sockaddr_in local_addr;
+    socklen_t local_addr_len = sizeof(local_addr);
+    int rt = getsockname(m_fd, (sockaddr*)&local_addr, &local_addr_len);
+    if(rt != 0) {
+        ERRORLOG("initLocalAddr error, errno[%d], error: %s", errno, strerror(errno));
+        return;
+    }
+
+    m_local_addr = std::make_shared<IPNetAddr>(local_addr);
+}
+
 void TcpClient::onConnect(std::function<void()> done) {
     int rt = connect(m_fd, m_peer_addr->getSockAddr(), m_peer_addr->getSockLen());
     if(rt == 0) {
         DEBUGLOG("connect success to %s", m_peer_addr->toString().c_str());
         m_connection->setState(Connected);
+        initLocalAddr();
         if(done) {
             done();
         }
@@ -53,6 +67,7 @@ void TcpClient::onConnect(std::function<void()> done) {
                 if(val == 0) {
                     DEBUGLOG("connect success to %s", m_peer_addr->toString().c_str());
                     m_connection->setState(Connected);
+                    initLocalAddr();
 
                     // 连接成功后去掉对可写事件的监听，否则会一直触发
                     m_fd_event->cancel(FdEvent::OUT_EVENT);
@@ -63,6 +78,8 @@ void TcpClient::onConnect(std::function<void()> done) {
                         done();
                     }
                 } else {
+                    m_error_code = ERROR_FAILED_CONNECT;
+                    m_error_info = "connect error, sys error: " + std::string(strerror(errno));
                     ERRORLOG("conncet error, errno: %d, error: %s", errno, strerror(errno));
                 }
             });
@@ -74,6 +91,9 @@ void TcpClient::onConnect(std::function<void()> done) {
 
         } else {
             ERRORLOG("conncet error, errno: %d, error: %s", errno, strerror(errno));
+            if(done) {
+                done();
+            }
         }
     }
 }
@@ -94,6 +114,22 @@ void TcpClient::stop() {
     if(m_event_loop->isLooping()) {
         m_event_loop->stop();
     }
+}
+
+int TcpClient::getErrorCode() {
+    return m_error_code;
+}
+
+std::string TcpClient::getErrorInfo() {
+    return m_error_info;
+}
+
+NetAddr::s_ptr TcpClient::getPeerAddr() {
+    return m_peer_addr;
+}
+
+NetAddr::s_ptr TcpClient::getLocalAddr() {
+    return m_local_addr;
 }
 
 

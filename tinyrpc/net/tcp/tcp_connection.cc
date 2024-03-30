@@ -22,6 +22,7 @@ TcpConnection::TcpConnection(EventLoop* event_loop, int fd, int buffer_size, Net
 }
 
 TcpConnection::~TcpConnection() {
+    INFOLOG("~TcpConnection()");
     if(m_coder) {
         delete m_coder;
     }

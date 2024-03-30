@@ -59,17 +59,28 @@ void RpcChannel::CallMethod(const google::protobuf::MethodDescriptor* method,
     m_client->onConnect([req_protocol, request, channel]() mutable {
         // 由于是回调函数, 因此在执行回调函数时, 传入的参数可能已经析构
         // 需要使用成员函数存储
-        channel->getTcpClient()->writeMessage(req_protocol, [req_protocol, request, channel](AbstractProtocol::s_ptr) mutable {
+
+        RpcController* my_controller = dynamic_cast<RpcController*>(channel->getController());
+
+        if(channel->getTcpClient()->getErrorCode() != 0) {
+            my_controller->SetError(channel->getTcpClient()->getErrorCode(), channel->getTcpClient()->getErrorInfo());
+            ERRORLOG("%s | connect error, peer addr[%s], error code[%d], error info[%s]", req_protocol->m_msg_id.c_str(), 
+            channel->getTcpClient()->getPeerAddr()->toString().c_str(), 
+            channel->getTcpClient()->getErrorCode(), channel->getTcpClient()->getErrorInfo().c_str());
+            return;
+        }
+
+        channel->getTcpClient()->writeMessage(req_protocol, [req_protocol, request, channel, my_controller](AbstractProtocol::s_ptr) mutable {
             // 发送成功的回调函数
-            INFOLOG("%s|, send request success, call method name[%s], origin request[%s]", 
-            req_protocol->m_msg_id.c_str(), req_protocol->m_method_name.c_str(), request->ShortDebugString().c_str());
+            INFOLOG("%s |, send request success, call method name[%s], peer addr[%s], local addr[%s]", 
+            req_protocol->m_msg_id.c_str(), req_protocol->m_method_name.c_str(),
+            channel->getTcpClient()->getPeerAddr()->toString().c_str(), channel->getTcpClient()->getLocalAddr()->toString().c_str());
             
             // 读取回包
-            channel->getTcpClient()->readMessage(req_protocol->m_msg_id, [channel](AbstractProtocol::s_ptr msg_ptr) mutable {
+            channel->getTcpClient()->readMessage(req_protocol->m_msg_id, [channel, my_controller](AbstractProtocol::s_ptr msg_ptr) mutable {
                 std::shared_ptr<TinyPBProtocol> rsp_protocol = std::dynamic_pointer_cast<TinyPBProtocol>(msg_ptr);
                 INFOLOG("%s| get response %s, call method name[%s]", rsp_protocol->m_msg_id.c_str(), rsp_protocol->m_msg_id.c_str(), 
                 rsp_protocol->m_method_name.c_str());
-                RpcController* my_controller = dynamic_cast<RpcController*>(channel->getController());
 
                 if(!(channel->getResponse()->ParseFromString(rsp_protocol->m_pb_data))) {
                     my_controller->SetError(ERROR_FAILED_DESERIALIZE, "deserialized error");
@@ -83,6 +94,9 @@ void RpcChannel::CallMethod(const google::protobuf::MethodDescriptor* method,
                     rsp_protocol->m_error_code, rsp_protocol->m_error_msg.c_str());
                     return;
                 }
+
+                INFOLOG("%s | call rpc success, peer addr[%s], local addr[%s]", rsp_protocol->m_msg_id.c_str(), 
+                channel->getTcpClient()->getPeerAddr()->toString().c_str(), channel->getTcpClient()->getLocalAddr()->toString().c_str());
 
                 if(channel->getClosure()) {
                     channel->getClosure()->Run();
