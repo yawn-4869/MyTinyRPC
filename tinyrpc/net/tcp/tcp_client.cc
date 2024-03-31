@@ -60,29 +60,34 @@ void TcpClient::onConnect(std::function<void()> done) {
     } else if(rt == -1) {
         if(errno == EINPROGRESS) {
             // 添加到epoll, 监听可写事件
-            m_fd_event->listen(FdEvent::OUT_EVENT, [this, done](){
-                int val = 0;
-                socklen_t val_len = sizeof(val);
-                getsockopt(m_fd, SOL_SOCKET, SO_ERROR, &val, &val_len);
-                if(val == 0) {
-                    DEBUGLOG("connect success to %s", m_peer_addr->toString().c_str());
-                    m_connection->setState(Connected);
-                    initLocalAddr();
-
-                    // 连接成功后去掉对可写事件的监听，否则会一直触发
-                    m_fd_event->cancel(FdEvent::OUT_EVENT);
+            m_fd_event->listen(FdEvent::OUT_EVENT, 
+                [this, done](){
+                    int rt = connect(m_fd, m_peer_addr->getSockAddr(), m_peer_addr->getSockLen());
+                    if((rt < 0 && errno == EISCONN) || rt == 0) {
+                        DEBUGLOG("connect success to %s", m_peer_addr->toString().c_str());
+                        m_connection->setState(Connected);
+                        initLocalAddr();
+                    } else {
+                        if(errno == ECONNREFUSED) {
+                            m_error_code = ERROR_PEER_CLOSE;
+                            m_error_info = "connect refused, sys error = " + std::string(strerror(errno));
+                        } else {
+                            m_error_code = ERROR_FAILED_CONNECT;
+                            m_error_info = "connect unkonwn error, sys error = " + std::string(strerror(errno));
+                        }
+                        ERRORLOG("connect error, errno[%d], error: %s", errno, strerror(errno));
+                        close(m_fd);
+                        m_fd = socket(m_peer_addr->getFamily(), SOCK_STREAM, 0);
+                    }
+                    // 连接完后需要去掉可写事件的监听，不然会一直触发
                     m_event_loop->deleteEpollEvent(m_fd_event);
-
-                    // 执行回调函数
-                    if(done) {
+                    DEBUGLOG("now begin to done");
+                    // 如果连接完成，才会执行回调函数
+                    if (done) {
                         done();
                     }
-                } else {
-                    m_error_code = ERROR_FAILED_CONNECT;
-                    m_error_info = "connect error, sys error: " + std::string(strerror(errno));
-                    ERRORLOG("conncet error, errno: %d, error: %s", errno, strerror(errno));
                 }
-            });
+            );
 
             m_event_loop->addEpollEvent(m_fd_event);
             if(!m_event_loop->isLooping()) {
@@ -90,6 +95,8 @@ void TcpClient::onConnect(std::function<void()> done) {
             }
 
         } else {
+            m_error_code = ERROR_FAILED_CONNECT;
+            m_error_info = "connect error, sys error: " + std::string(strerror(errno));
             ERRORLOG("conncet error, errno: %d, error: %s", errno, strerror(errno));
             if(done) {
                 done();

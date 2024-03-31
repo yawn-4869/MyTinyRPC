@@ -60,16 +60,16 @@ private:
 
 private:
     EventLoop* m_event_loop{ NULL }; // 所属io线程的eventloop
-
-    NetAddr::s_ptr m_local_addr; // 本地地址
-    NetAddr::s_ptr m_peer_addr; // 监听地址
-    FdEvent* m_fd_event; // 绑定的监听事件
     int m_fd;
+    TcpState m_state; // 连接状态
+
+    NetAddr::s_ptr m_peer_addr; // 监听地址
+    NetAddr::s_ptr m_local_addr; // 本地地址
+    FdEvent* m_fd_event; // 绑定的监听事件
 
     TcpBuffer::s_ptr m_in_buffer; // 写入缓冲区
     TcpBuffer::s_ptr m_out_buffer; // 写出缓冲区
 
-    TcpState m_state; // 连接状态
     TcpConnectionType m_connection_type{ TcpConnectionByServer };
 
     AbstractCoder* m_coder;

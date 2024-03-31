@@ -103,7 +103,7 @@ bool RpcDisPatcher::parseServiceFullName(const std::string full_name, std::strin
         ERRORLOG("full name is empty");
         return false;
     }
-    int split_pos = full_name.find_first_of(".");
+    size_t split_pos = full_name.find_first_of(".");
     if(split_pos == full_name.npos) {
         ERRORLOG("parseServiceFullName[%s] error, method full name illeagal", full_name.c_str());
         return false;

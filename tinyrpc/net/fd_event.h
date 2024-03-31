@@ -9,7 +9,8 @@ class FdEvent {
 public:
     enum TriggerEvent {
         IN_EVENT = EPOLLIN,
-        OUT_EVENT = EPOLLOUT
+        OUT_EVENT = EPOLLOUT,
+        ERROR_EVENT = EPOLLERR
     };
 
     FdEvent(int fd);
@@ -17,7 +18,7 @@ public:
     ~FdEvent();
     void setNonBlock(); // 设置未阻塞
     std::function<void()> handler(TriggerEvent event_type); // 返回事件绑定的函数
-    void listen(TriggerEvent event_type, std::function<void()> callback); // 绑定函数
+    void listen(TriggerEvent event_type, std::function<void()> callback, std::function<void()> error_callback = nullptr); // 绑定函数
     void cancel(TriggerEvent event_type); // 取消事件绑定
     int getFd() {
         return m_fd;
