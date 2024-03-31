@@ -1,0 +1,90 @@
+[INFO]	[24-04-01 00:06:11.154]	[6016:6016]	[tinyrpc/net/eventloop.cc:146]	epoll_event.events=1
+[DEBUG]	[24-04-01 00:06:11.155]	[6016:6016]	[tinyrpc/net/eventloop.cc:146]	add event success, fd[4]
+[DEBUG]	[24-04-01 00:06:11.155]	[6016:6016]	[tinyrpc/net/timer.cc:12]	timer fd=5
+[INFO]	[24-04-01 00:06:11.155]	[6016:6016]	[tinyrpc/net/eventloop.cc:146]	epoll_event.events=1
+[DEBUG]	[24-04-01 00:06:11.155]	[6016:6016]	[tinyrpc/net/eventloop.cc:146]	add event success, fd[5]
+[INFO]	[24-04-01 00:06:11.155]	[6016:6016]	[tinyrpc/net/eventloop.cc:57]	success created event loop in thread 6016
+[INFO]	[24-04-01 00:06:11.155]	[6016:6018]	[tinyrpc/net/eventloop.cc:146]	epoll_event.events=1
+[DEBUG]	[24-04-01 00:06:11.155]	[6016:6018]	[tinyrpc/net/eventloop.cc:146]	add event success, fd[7]
+[DEBUG]	[24-04-01 00:06:11.155]	[6016:6018]	[tinyrpc/net/timer.cc:12]	timer fd=8
+[INFO]	[24-04-01 00:06:11.155]	[6016:6018]	[tinyrpc/net/eventloop.cc:146]	epoll_event.events=1
+[DEBUG]	[24-04-01 00:06:11.155]	[6016:6018]	[tinyrpc/net/eventloop.cc:146]	add event success, fd[8]
+[INFO]	[24-04-01 00:06:11.155]	[6016:6018]	[tinyrpc/net/eventloop.cc:57]	success created event loop in thread 6018
+[DEBUG]	[24-04-01 00:06:11.155]	[6016:6018]	[tinyrpc/net/io_thread.cc:44]	IOThread [6018] created wait to start
+[DEBUG]	[24-04-01 00:06:11.155]	[6016:6016]	[tinyrpc/net/io_thread.cc:19]	IOThread [6018] create success
+[INFO]	[24-04-01 00:06:11.155]	[6016:6019]	[tinyrpc/net/eventloop.cc:146]	epoll_event.events=1
+[DEBUG]	[24-04-01 00:06:11.155]	[6016:6019]	[tinyrpc/net/eventloop.cc:146]	add event success, fd[10]
+[DEBUG]	[24-04-01 00:06:11.155]	[6016:6019]	[tinyrpc/net/timer.cc:12]	timer fd=11
+[INFO]	[24-04-01 00:06:11.155]	[6016:6019]	[tinyrpc/net/eventloop.cc:146]	epoll_event.events=1
+[DEBUG]	[24-04-01 00:06:11.155]	[6016:6019]	[tinyrpc/net/eventloop.cc:146]	add event success, fd[11]
+[INFO]	[24-04-01 00:06:11.155]	[6016:6019]	[tinyrpc/net/eventloop.cc:57]	success created event loop in thread 6019
+[DEBUG]	[24-04-01 00:06:11.155]	[6016:6019]	[tinyrpc/net/io_thread.cc:44]	IOThread [6019] created wait to start
+[DEBUG]	[24-04-01 00:06:11.155]	[6016:6016]	[tinyrpc/net/io_thread.cc:19]	IOThread [6019] create success
+[INFO]	[24-04-01 00:06:11.155]	[6016:6020]	[tinyrpc/net/eventloop.cc:146]	epoll_event.events=1
+[DEBUG]	[24-04-01 00:06:11.155]	[6016:6020]	[tinyrpc/net/eventloop.cc:146]	add event success, fd[13]
+[DEBUG]	[24-04-01 00:06:11.155]	[6016:6020]	[tinyrpc/net/timer.cc:12]	timer fd=14
+[INFO]	[24-04-01 00:06:11.155]	[6016:6020]	[tinyrpc/net/eventloop.cc:146]	epoll_event.events=1
+[DEBUG]	[24-04-01 00:06:11.155]	[6016:6020]	[tinyrpc/net/eventloop.cc:146]	add event success, fd[14]
+[INFO]	[24-04-01 00:06:11.155]	[6016:6020]	[tinyrpc/net/eventloop.cc:57]	success created event loop in thread 6020
+[DEBUG]	[24-04-01 00:06:11.155]	[6016:6020]	[tinyrpc/net/io_thread.cc:44]	IOThread [6020] created wait to start
+[DEBUG]	[24-04-01 00:06:11.155]	[6016:6016]	[tinyrpc/net/io_thread.cc:19]	IOThread [6020] create success
+[INFO]	[24-04-01 00:06:11.155]	[6016:6021]	[tinyrpc/net/eventloop.cc:146]	epoll_event.events=1
+[DEBUG]	[24-04-01 00:06:11.155]	[6016:6021]	[tinyrpc/net/eventloop.cc:146]	add event success, fd[16]
+[DEBUG]	[24-04-01 00:06:11.155]	[6016:6021]	[tinyrpc/net/timer.cc:12]	timer fd=17
+[INFO]	[24-04-01 00:06:11.155]	[6016:6021]	[tinyrpc/net/eventloop.cc:146]	epoll_event.events=1
+[DEBUG]	[24-04-01 00:06:11.155]	[6016:6021]	[tinyrpc/net/eventloop.cc:146]	add event success, fd[17]
+[INFO]	[24-04-01 00:06:11.155]	[6016:6021]	[tinyrpc/net/eventloop.cc:57]	success created event loop in thread 6021
+[DEBUG]	[24-04-01 00:06:11.155]	[6016:6021]	[tinyrpc/net/io_thread.cc:44]	IOThread [6021] created wait to start
+[DEBUG]	[24-04-01 00:06:11.155]	[6016:6016]	[tinyrpc/net/io_thread.cc:19]	IOThread [6021] create success
+[INFO]	[24-04-01 00:06:11.156]	[6016:6016]	[tinyrpc/net/eventloop.cc:146]	epoll_event.events=1
+[DEBUG]	[24-04-01 00:06:11.156]	[6016:6016]	[tinyrpc/net/eventloop.cc:146]	add event success, fd[18]
+[INFO]	[24-04-01 00:06:11.156]	[6016:6016]	[tinyrpc/net/tcp/tcp_server.cc:8]	TcpServer listen sucess on [127.0.0.1:12345]
+[DEBUG]	[24-04-01 00:06:11.156]	[6016:6016]	[tinyrpc/net/io_thread.cc:57]	Now invoke IOThread [6018]
+[DEBUG]	[24-04-01 00:06:11.156]	[6016:6016]	[tinyrpc/net/io_thread.cc:57]	Now invoke IOThread [6019]
+[DEBUG]	[24-04-01 00:06:11.156]	[6016:6016]	[tinyrpc/net/io_thread.cc:57]	Now invoke IOThread [6020]
+[DEBUG]	[24-04-01 00:06:11.156]	[6016:6018]	[tinyrpc/net/io_thread.cc:48]	IOThread [6018] start loop
+[DEBUG]	[24-04-01 00:06:11.156]	[6016:6019]	[tinyrpc/net/io_thread.cc:48]	IOThread [6019] start loop
+[DEBUG]	[24-04-01 00:06:11.156]	[6016:6016]	[tinyrpc/net/io_thread.cc:57]	Now invoke IOThread [6021]
+[DEBUG]	[24-04-01 00:06:11.156]	[6016:6020]	[tinyrpc/net/io_thread.cc:48]	IOThread [6020] start loop
+[DEBUG]	[24-04-01 00:06:11.156]	[6016:6021]	[tinyrpc/net/io_thread.cc:48]	IOThread [6021] start loop
+[INFO]	[24-04-01 00:06:17.137]	[6016:6016]	[tinyrpc/net/tcp/tcp_acceptor.cc:55]	A peer client have accepted, client_fd:20
+[DEBUG]	[24-04-01 00:06:17.137]	[6016:6016]	[tinyrpc/net/wakeup_fd_event.cc:20]	success read 8 bytes
+[INFO]	[24-04-01 00:06:17.137]	[6016:6016]	[tinyrpc/net/tcp/tcp_server.cc:42]	TcpServer get client[127.0.0.1:-29060] success, clientfd[20]
+[INFO]	[24-04-01 00:06:17.137]	[6016:6018]	[tinyrpc/net/eventloop.cc:149]	epoll_event.events=1
+[DEBUG]	[24-04-01 00:06:17.137]	[6016:6018]	[tinyrpc/net/eventloop.cc:149]	add event success, fd[20]
+[DEBUG]	[24-04-01 00:06:17.137]	[6016:6018]	[tinyrpc/net/eventloop.cc:208]	read full bytes from wakeup fd[7]
+[DEBUG]	[24-04-01 00:06:17.137]	[6016:6018]	[tinyrpc/net/coder/tinypb_coder.cc:43]	index i[0], len[58]
+[DEBUG]	[24-04-01 00:06:17.137]	[6016:6018]	[tinyrpc/net/coder/tinypb_coder.cc:45]	get pkg_llen = 58
+[DEBUG]	[24-04-01 00:06:17.137]	[6016:6018]	[tinyrpc/net/coder/tinypb_coder.cc:90]	parse msg_id=99998888
+[DEBUG]	[24-04-01 00:06:17.137]	[6016:6018]	[tinyrpc/net/coder/tinypb_coder.cc:106]	parse method_name=Order.makeOrder
+[DEBUG]	[24-04-01 00:06:17.137]	[6016:6018]	[tinyrpc/net/coder/tinypb_coder.cc:131]	parse error_info=
+[DEBUG]	[24-04-01 00:06:17.137]	[6016:6018]	[tinyrpc/net/coder/tinypb_coder.cc:136]	parse pb_data=dapple
+[DEBUG]	[24-04-01 00:06:17.137]	[6016:6018]	[tinyrpc/net/coder/tinypb_coder.cc:66]	decode end, read all buffer data
+[INFO]	[24-04-01 00:06:17.137]	[6016:6018]	[tinyrpc/net/tcp/tcp_connection.cc:97]	success get request [99998888] from client [127.0.0.1:-29060], clientfd [20]
+[INFO]	[24-04-01 00:06:17.137]	[6016:6018]	[tinyrpc/net/rpc/rpc_dispatcher.cc:114]	parse success from Order.makeOrder, service_name[Order], method_name[makeOrder]
+[INFO]	[24-04-01 00:06:17.137]	[6016:6018]	[tinyrpc/net/rpc/rpc_dispatcher.cc:57]	msg_id[99998888], get rpc request[price: 100 goods: "apple"]
+[DEBUG]	[24-04-01 00:06:17.137]	[6016:6018]	[tests/test_rpc_server.cc:15]	now start sleep
+[INFO]	[24-04-01 00:06:17.136]	[6022:6022]	[tinyrpc/net/eventloop.cc:146]	epoll_event.events=1
+[DEBUG]	[24-04-01 00:06:17.136]	[6022:6022]	[tinyrpc/net/eventloop.cc:146]	add event success, fd[4]
+[DEBUG]	[24-04-01 00:06:17.136]	[6022:6022]	[tinyrpc/net/timer.cc:12]	timer fd=5
+[INFO]	[24-04-01 00:06:17.136]	[6022:6022]	[tinyrpc/net/eventloop.cc:146]	epoll_event.events=1
+[DEBUG]	[24-04-01 00:06:17.136]	[6022:6022]	[tinyrpc/net/eventloop.cc:146]	add event success, fd[5]
+[INFO]	[24-04-01 00:06:17.136]	[6022:6022]	[tinyrpc/net/eventloop.cc:57]	success created event loop in thread 6022
+[INFO]	[24-04-01 00:06:17.137]	[6022:6022]	[tinyrpc/net/eventloop.cc:146]	epoll_event.events=4
+[DEBUG]	[24-04-01 00:06:17.137]	[6022:6022]	[tinyrpc/net/eventloop.cc:146]	add event success, fd[7]
+[DEBUG]	[24-04-01 00:06:17.137]	[6022:6022]	[tinyrpc/net/tcp/tcp_client.cc:67]	connect success to 127.0.0.1:12345
+[DEBUG]	[24-04-01 00:06:17.137]	[6022:6022]	[tinyrpc/net/eventloop.cc:161]	delete event success, fd[7]
+[DEBUG]	[24-04-01 00:06:17.137]	[6022:6022]	[tinyrpc/net/tcp/tcp_client.cc:84]	now begin to done
+[INFO]	[24-04-01 00:06:17.137]	[6022:6022]	[tinyrpc/net/eventloop.cc:146]	epoll_event.events=4
+[DEBUG]	[24-04-01 00:06:17.137]	[6022:6022]	[tinyrpc/net/eventloop.cc:146]	add event success, fd[7]
+[DEBUG]	[24-04-01 00:06:17.137]	[6022:6022]	[tinyrpc/net/coder/tinypb_coder.cc:218]	encode message[99998888] success
+[DEBUG]	[24-04-01 00:06:17.137]	[6022:6022]	[tinyrpc/net/tcp/tcp_connection.cc:166]	no data need to send to client [127.0.0.1:12345], clientfd [7]
+[INFO]	[24-04-01 00:06:17.137]	[6022:6022]	[tinyrpc/net/eventloop.cc:146]	epoll_event.events=0
+[DEBUG]	[24-04-01 00:06:17.137]	[6022:6022]	[tinyrpc/net/eventloop.cc:146]	add event success, fd[7]
+[INFO]	[24-04-01 00:06:17.137]	[6022:6022]	[tinyrpc/net/rpc/rpc_channel.cc:87]	99998888 |, send request success, call method name[Order.makeOrder], peer addr[127.0.0.1:12345], local addr[127.0.0.1:-29060]
+[INFO]	[24-04-01 00:06:17.137]	[6022:6022]	[tinyrpc/net/eventloop.cc:146]	epoll_event.events=1
+[DEBUG]	[24-04-01 00:06:17.137]	[6022:6022]	[tinyrpc/net/eventloop.cc:146]	add event success, fd[7]
+[ERROR]	[24-04-01 00:06:18.137]	[6022:6022]	[tests/test_rpc_client.cc:74]	call rpc failed, request[price: 100 goods: "apple"], error code[10000007], error info: rpc call timeout1000
+[DEBUG]	[24-04-01 00:06:18.137]	[6022:6022]	[tinyrpc/net/wakeup_fd_event.cc:20]	success read 8 bytes
+[ERROR]	[24-04-01 00:06:18.137]	[6022:6022]	[tests/test_rpc_client.cc:74]	call rpc failed, request[price: 100 goods: "apple"], error code[10000007], error info: rpc call timeout1000
+[DEBUG]	[24-04-01 00:06:18.137]	[6022:6022]	[tinyrpc/net/wakeup_fd_event.cc:20]	success read 8 bytes

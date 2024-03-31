@@ -123,6 +123,10 @@ void TcpClient::stop() {
     }
 }
 
+void TcpClient::addTimerEvent(TimeEvent::s_ptr timer_event) {
+    m_event_loop->addTimerEvent(timer_event);
+}
+
 int TcpClient::getErrorCode() {
     return m_error_code;
 }

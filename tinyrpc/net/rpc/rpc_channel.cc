@@ -7,6 +7,7 @@
 #include "tinyrpc/common/msg_util.h"
 #include "tinyrpc/common/error_code.h"
 #include "tinyrpc/net/tcp/tcp_client.h"
+#include "tinyrpc/net/time_event.h"
 
 namespace MyTinyRPC {
 
@@ -54,6 +55,17 @@ void RpcChannel::CallMethod(const google::protobuf::MethodDescriptor* method,
     }
 
     s_ptr channel = shared_from_this();
+    m_timer_event = std::make_shared<TimeEvent>(my_controller->GetTimeout(), false, [my_controller,channel]() mutable {
+        // 超时, 取消rpc调用, 执行回调函数
+        my_controller->StartCancel();
+        my_controller->SetError(ERROR_RPC_CALL_TIMEOUT, "rpc call timeout" + std::to_string(my_controller->GetTimeout()));
+        if(channel->getClosure()) {
+            channel->getClosure()->Run();
+        }
+        channel.reset();
+    });
+
+    m_client->addTimerEvent(m_timer_event);
 
     // TcpClient client(m_peer_addr);
     m_client->onConnect([req_protocol, request, channel]() mutable {
@@ -82,6 +94,9 @@ void RpcChannel::CallMethod(const google::protobuf::MethodDescriptor* method,
                 INFOLOG("%s| get response %s, call method name[%s]", rsp_protocol->m_msg_id.c_str(), rsp_protocol->m_msg_id.c_str(), 
                 rsp_protocol->m_method_name.c_str());
 
+                // 读取到回包, 取消管理超时的定时任务
+                channel->getTimerEvent()->setCancel(true);
+
                 if(!(channel->getResponse()->ParseFromString(rsp_protocol->m_pb_data))) {
                     my_controller->SetError(ERROR_FAILED_DESERIALIZE, "deserialized error");
                     ERRORLOG("%S | deserialized error", rsp_protocol->m_msg_id.c_str());
@@ -98,7 +113,7 @@ void RpcChannel::CallMethod(const google::protobuf::MethodDescriptor* method,
                 INFOLOG("%s | call rpc success, peer addr[%s], local addr[%s]", rsp_protocol->m_msg_id.c_str(), 
                 channel->getTcpClient()->getPeerAddr()->toString().c_str(), channel->getTcpClient()->getLocalAddr()->toString().c_str());
 
-                if(channel->getClosure()) {
+                if(!my_controller->IsCanceled() && channel->getClosure()) {
                     channel->getClosure()->Run();
                 }
 
@@ -139,6 +154,10 @@ google::protobuf::Closure* RpcChannel::getClosure() {
 
 TcpClient* RpcChannel::getTcpClient() {
     return m_client.get();
+}
+
+TimeEvent::s_ptr RpcChannel::getTimerEvent() {
+    return m_timer_event;
 }
 
 }

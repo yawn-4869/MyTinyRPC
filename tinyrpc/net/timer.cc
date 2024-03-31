@@ -121,14 +121,16 @@ void Timer::resetArriveTime() {
         interval = 100;
     }
     timespec ts;
+    memset(&ts, 0, sizeof(ts));
     ts.tv_sec = interval / 1000;
     ts.tv_nsec = (interval % 1000) * 1000000;
     // itimerspec: it_value: 第一次调用的时间 it_interval: 第一次调用后重复调用的间隔时间
     itimerspec value;
+    memset(&value, 0, sizeof(value));
     value.it_value = ts;
     int rt = timerfd_settime(m_fd, 0, &value, NULL);
     if(rt != 0) {
-        ERRORLOG("timerfd_settime error, errno=%d, error=%s", errno, strerror(errno));
+        ERRORLOG("fd[%d] timerfd_settime error, errno=%d, error=%s, interval[%d]", m_fd, errno, strerror(errno), interval);
     }
     // DEBUGLOG("timer reset to %lld", now + interval);
 }

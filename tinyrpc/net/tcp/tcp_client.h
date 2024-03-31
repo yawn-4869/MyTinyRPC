@@ -28,6 +28,8 @@ public:
     // 结束eventloop
     void stop();
 
+    void addTimerEvent(TimeEvent::s_ptr timer_event);
+
     int getErrorCode();
 
     std::string getErrorInfo();

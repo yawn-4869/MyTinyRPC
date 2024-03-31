@@ -45,7 +45,7 @@ void FdEvent::listen(TriggerEvent event_type, std::function<void()> callback, st
         m_write_callback = callback;
     }
 
-    if(error_callback != nullptr) {
+    if(m_error_callback == nullptr) {
         m_error_callback = error_callback;
     } else {
         m_error_callback = nullptr;

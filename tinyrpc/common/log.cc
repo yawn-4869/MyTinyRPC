@@ -33,10 +33,10 @@ void Logger::init() {
 
 void Logger::pushLog(const std::string msg) {
     // m_buffer.push(msg);
-    printf(msg.c_str());
-    // ScopeLocker<Mutex> lck(m_mutex);
-    // m_buffer.push_back(msg);
-    // lck.unlock();
+    // printf(msg.c_str());
+    ScopeLocker<Mutex> lck(m_mutex);
+    m_buffer.push_back(msg);
+    lck.unlock();
 }
 
 void Logger::log() {

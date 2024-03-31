@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "tinyrpc/common/log.h"
 #include "tinyrpc/common/config.h"
 #include "tinyrpc/net/tcp/tcp_server.h"
@@ -11,12 +12,22 @@ class OrderImpl : public Order {
                       const ::makeOrderRequest* request,
                       ::makeOrderResponse* response,
                       ::google::protobuf::Closure* done) {
+    DEBUGLOG("now start sleep")
+    sleep(5);
+    DEBUGLOG("sleep end")
     if (request->price() < 10) {
       response->set_ret_code(-1);
       response->set_res_info("short balance");
       return;
     }
     response->set_order_id("20230514");
+
+    DEBUGLOG("call makeOrder success");
+    if (done) {
+      done->Run();
+      delete done;
+      done = NULL;
+    }
   }
 };
 

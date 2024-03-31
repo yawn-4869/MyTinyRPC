@@ -95,7 +95,8 @@ void EventLoop::loop() {
         int time_out = g_epoll_max_timeout;
         epoll_event result_events[g_epoll_max_events];
         int rt = epoll_wait(m_epoll_fd, result_events, g_epoll_max_events, time_out);
-        DEBUGLOG("now end epoll_wait, rt = %d", rt);
+        int events_num = result_events[0].events;
+        // DEBUGLOG("now end epoll_wait, rt = %d, events: %d", rt, events_num);
         if(rt < 0) {
             ERRORLOG("epoll wait error, errno: %d", errno);
         } else {
@@ -103,6 +104,7 @@ void EventLoop::loop() {
                 epoll_event trigger_event = result_events[i];
                 FdEvent* fd_event = static_cast<FdEvent*> (trigger_event.data.ptr);
                 if(fd_event == NULL) {
+                    ERRORLOG("fd_event = NULL, continue")
                     continue;
                 }
 
@@ -120,7 +122,8 @@ void EventLoop::loop() {
                     DEBUGLOG("fd %d trigger EPOLLERROR event", fd_event->getFd())
                     deleteEpollEvent(fd_event);
                     if(fd_event->handler(FdEvent::ERROR_EVENT) != nullptr) {
-                        addTask(fd_event->handler(FdEvent::OUT_EVENT));
+                        DEBUGLOG("fd %d add error callback", fd_event->getFd())
+                        addTask(fd_event->handler(FdEvent::ERROR_EVENT));
                     }
                 }
             }

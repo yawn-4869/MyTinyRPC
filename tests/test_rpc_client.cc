@@ -48,29 +48,43 @@ void test_client() {
 }
 
 void test_rpc_channel() {
-    MyTinyRPC::IPNetAddr::s_ptr peer_addr = std::make_shared<MyTinyRPC::IPNetAddr>("127.0.0.1", 12345);
-    std::shared_ptr<MyTinyRPC::RpcChannel> channel = std::make_shared<MyTinyRPC::RpcChannel>(peer_addr);
-
-    std::shared_ptr<MyTinyRPC::RpcController> controller = std::make_shared<MyTinyRPC::RpcController>();
+    // MyTinyRPC::IPNetAddr::s_ptr peer_addr = std::make_shared<MyTinyRPC::IPNetAddr>("127.0.0.1", 12345);
+    // std::shared_ptr<MyTinyRPC::RpcChannel> channel = std::make_shared<MyTinyRPC::RpcChannel>(peer_addr);
+    NEWRPCCHANNEL(channel, "127.0.0.1:12345");
+    // std::shared_ptr<MyTinyRPC::RpcController> controller = std::make_shared<MyTinyRPC::RpcController>();
+    NEWRPCCONTROLLER(controller);
     controller->SetMsgId("99998888");
 
-    std::shared_ptr<makeOrderRequest> request = std::make_shared<makeOrderRequest>();
+    // std::shared_ptr<makeOrderRequest> request = std::make_shared<makeOrderRequest>();
+    NEWMESSAGE(makeOrderRequest, request);
     request->set_price(100);
     request->set_goods("apple");
 
-    std::shared_ptr<makeOrderResponse> response = std::make_shared<makeOrderResponse>();
+    // std::shared_ptr<makeOrderResponse> response = std::make_shared<makeOrderResponse>();
+    NEWMESSAGE(makeOrderResponse, response);
 
-    std::shared_ptr<MyTinyRPC::RpcClosure> closure = std::make_shared<MyTinyRPC::RpcClosure>([request, response, channel]() mutable {
-        INFOLOG("call rpc success, request[%s], response[%s]", request->ShortDebugString().c_str(), 
-        response->ShortDebugString().c_str());
+    std::shared_ptr<MyTinyRPC::RpcClosure> closure = std::make_shared<MyTinyRPC::RpcClosure>([request, response, channel, controller]() mutable {
+        if(controller->GetErrorCode() == 0) {
+            INFOLOG("call rpc success, request[%s], response[%s]", request->ShortDebugString().c_str(), 
+            response->ShortDebugString().c_str());
+            if(response->order_id() == "xxx") {
+
+            }
+        } else {
+            ERRORLOG("call rpc failed, request[%s], error code[%d], error info: %s", 
+            request->ShortDebugString().c_str(), 
+            controller->GetErrorCode(),
+            controller->GetErrorInfo().c_str());
+        }
         channel->getTcpClient()->stop();
         channel.reset();
     });
 
-    channel->Init(controller, request, response, closure);
+    // channel->Init(controller, request, response, closure);
 
-    Order_Stub stub(channel.get());
-    stub.makeOrder(controller.get(), request.get(), response.get(), closure.get());
+    // Order_Stub stub(channel.get());
+    // stub.makeOrder(controller.get(), request.get(), response.get(), closure.get());
+    CALLRPC("127.0.0.1:12345", Order_Stub, makeOrder, controller, request, response, closure);
 }
 
 int main() {
