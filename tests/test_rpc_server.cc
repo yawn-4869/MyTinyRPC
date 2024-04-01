@@ -12,9 +12,9 @@ class OrderImpl : public Order {
                       const ::makeOrderRequest* request,
                       ::makeOrderResponse* response,
                       ::google::protobuf::Closure* done) {
-    DEBUGLOG("now start sleep")
+    APPDEBUGLOG("now start sleep")
     sleep(5);
-    DEBUGLOG("sleep end")
+    APPDEBUGLOG("sleep end")
     if (request->price() < 10) {
       response->set_ret_code(-1);
       response->set_res_info("short balance");
@@ -22,7 +22,7 @@ class OrderImpl : public Order {
     }
     response->set_order_id("20230514");
 
-    DEBUGLOG("call makeOrder success");
+    APPDEBUGLOG("call makeOrder success");
     if (done) {
       done->Run();
       delete done;

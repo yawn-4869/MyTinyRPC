@@ -1,8 +1,9 @@
-#include "log.h"
-#include "util.h"
 #include <sys/time.h>
 #include <sstream>
-#include "config.h"
+#include "tinyrpc/common/log.h"
+#include "tinyrpc/common/util.h"
+#include "tinyrpc/common/config.h"
+#include "tinyrpc/common/run_time.h"
 
 namespace MyTinyRPC {
 
@@ -19,13 +20,15 @@ void Logger::InitGlobalLogger() {
 }
 
 Logger::Logger(LogLevel level) : m_set_level(level){
-                      
+    m_async_logger = std::make_shared<AsyncLogger>(Config::GetGloabalConfig()->m_log_file_name + "_rpc", 
+                                                    Config::GetGloabalConfig()->m_log_file_path,
+                                                    Config::GetGloabalConfig()->m_log_max_file_size);
+    m_async_app_logger = std::make_shared<AsyncLogger>(Config::GetGloabalConfig()->m_log_file_name + "_app", 
+                                                    Config::GetGloabalConfig()->m_log_file_path,
+                                                    Config::GetGloabalConfig()->m_log_max_file_size);        
 }
 
 void Logger::init() {
-    m_async_logger = std::make_shared<AsyncLogger>(Config::GetGloabalConfig()->m_log_file_name, 
-                                                    Config::GetGloabalConfig()->m_log_file_path,
-                                                    Config::GetGloabalConfig()->m_log_max_file_size);
     m_time_event = std::make_shared<TimeEvent>(Config::GetGloabalConfig()->m_async_log_interval, true, 
                                                 std::bind(&Logger::asyncLoop, this));   
     EventLoop::GetCurrentEventLoop()->addTimerEvent(m_time_event);
@@ -39,6 +42,13 @@ void Logger::pushLog(const std::string msg) {
     lck.unlock();
 }
 
+void Logger::pushAppLog(const std::string msg) {
+    // m_buffer.push(msg);
+    ScopeLocker<Mutex> lck(m_app_mutex);
+    m_app_buffer.push_back(msg);
+    lck.unlock();
+}
+
 void Logger::log() {
     // std::queue<std::string> tmp;
     // ScopeLocker<Mutex> locker(m_mutex);
@@ -49,7 +59,6 @@ void Logger::log() {
     //     std::string msg = tmp.front();
     //     tmp.pop();
 
-    //     // TODO: 输出到终端要改为输出到日志文件
     //     printf(msg.c_str());
     // }
 }
@@ -61,11 +70,20 @@ void Logger::asyncLoop() {
     tmp.swap(m_buffer);
     lck.unlock();
 
-    if(tmp.empty()) {
-        return;
+    if(!tmp.empty()) {
+        m_async_logger->pushLogBuffer(tmp);
     }
-    // printf("logger asyncLoop: push tmp.size():%d, msg: %s\n", tmp.size(), tmp[0].c_str());
-    m_async_logger->pushLogBuffer(tmp);
+
+    tmp.clear();
+
+    std::vector<std::string> tmp2;
+    ScopeLocker<Mutex> app_lck(m_app_mutex);
+    tmp2.swap(m_app_buffer);
+    app_lck.unlock();
+
+    if(!tmp2.empty()) {
+        m_async_app_logger->pushLogBuffer(tmp2);
+    }
 }
 
 std::string LogLevelToString(LogLevel level) {
@@ -118,7 +136,6 @@ void* AsyncLogger::Loop(void* arg) {
             pthread_cond_wait(&(async_logger->m_conditon), async_logger->m_mutex.getMutex());
         }
 
-        // printf("AsyncLogger::Loop: pthread_cond_wait end, start loop thread\n");
         // 为解决缓冲区读出与写入速度不匹配的问题
         // 即有可能在缓冲区内的内容还未全部写入到日志文件时, 又有新的数据要写入到缓冲区
         // 因此使用队列作为缓冲区的数据结构, 每次只读取队首的数据
@@ -224,7 +241,18 @@ std::string LogEvent::toString() {
         << "[" << time_str << "]\t"
         << "[" << m_pid << ":" << m_tid << "]\t";
     // TODO: 请求信息的id
+
+    std::string msg_id = RunTime::GetRunTime()->m_msgid;
+    std::string method_name = RunTime::GetRunTime()->m_method_name;
+
+    if(!msg_id.empty()) {
+        ss << "[" << msg_id << "]\t";
+    }
     
+    if(!method_name.empty()) {
+        ss << "[" << method_name << "]\t";
+    }
+
     return ss.str();
 }
 

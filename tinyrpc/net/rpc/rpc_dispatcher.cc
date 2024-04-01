@@ -6,6 +6,7 @@
 #include "tinyrpc/common/error_code.h"
 #include "tinyrpc/net/rpc/rpc_controller.h"
 #include "tinyrpc/net/tcp/tcp_connection.h"
+#include "tinyrpc/common/run_time.h"
 
 namespace MyTinyRPC {
 
@@ -63,6 +64,9 @@ void RpcDisPatcher::dispatch(AbstractProtocol::s_ptr request, AbstractProtocol::
     rpc_controller.SetLocalAddr(connection->getLocalAddr());
     rpc_controller.SetPeerAddr(connection->getPeerAddr());
     rpc_controller.SetMsgId(req_protocol->m_msg_id);
+
+    RunTime::GetRunTime()->m_msgid = req_protocol->m_msg_id;
+    RunTime::GetRunTime()->m_method_name = method_name;
 
     service->CallMethod(method, &rpc_controller, req_msg, rsp_msg, NULL);
     

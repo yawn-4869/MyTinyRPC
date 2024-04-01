@@ -45,6 +45,27 @@ std::string formatString(const char* str, Args&&... args) {
     + MyTinyRPC::formatString(str, ##__VA_ARGS__) + "\n"); \
     } \
 
+#define APPDEBUGLOG(str, ...) \
+    if(MyTinyRPC::Logger::getGlobalLogger()->getLogLevel() && MyTinyRPC::Logger::getGlobalLogger()->getLogLevel() <= MyTinyRPC::DEBUG){ \
+    MyTinyRPC::Logger::getGlobalLogger()->pushAppLog((new MyTinyRPC::LogEvent(MyTinyRPC::LogLevel::DEBUG))->toString() \
+    + "[" + std::string(__FILE__) + ":" + std::to_string(__LINE__) + "]\t" \
+    + MyTinyRPC::formatString(str, ##__VA_ARGS__) + "\n"); \
+    } \
+
+#define APPINFOLOG(str, ...) \
+    if(MyTinyRPC::Logger::getGlobalLogger()->getLogLevel() && MyTinyRPC::Logger::getGlobalLogger()->getLogLevel() <= MyTinyRPC::INFO) { \
+    MyTinyRPC::Logger::getGlobalLogger()->pushAppLog((new MyTinyRPC::LogEvent(MyTinyRPC::LogLevel::INFO))->toString() \
+    + "[" + std::string(__FILE__) + ":" + std::to_string(__LINE__) + "]\t" \
+    + MyTinyRPC::formatString(str, ##__VA_ARGS__) + "\n"); \
+    } \
+
+#define APPERRORLOG(str, ...) \
+    if(MyTinyRPC::Logger::getGlobalLogger()->getLogLevel() && MyTinyRPC::Logger::getGlobalLogger()->getLogLevel() <= MyTinyRPC::ERROR) { \
+    MyTinyRPC::Logger::getGlobalLogger()->pushAppLog((new MyTinyRPC::LogEvent(MyTinyRPC::LogLevel::ERROR))->toString() \
+    + "[" + std::string(__FILE__) + ":" + std::to_string(__LINE__) + "]\t" \
+    + MyTinyRPC::formatString(str, ##__VA_ARGS__) + "\n"); \
+    } \
+
 
 enum LogLevel {
     UNKNOWN = 0,
@@ -92,6 +113,7 @@ public:
     }
     void init();
     void pushLog(const std::string msg);
+    void pushAppLog(const std::string msg);
     void log(); // 实现日志打印的方法
     void asyncLoop();
 
@@ -101,9 +123,12 @@ public:
 
 private:
     LogLevel m_set_level; // 设置的日志级别，高于日志级别才打印
-    std::vector<std::string> m_buffer; // 日志缓冲队列
-    Mutex m_mutex; // 日志缓冲队列的互斥锁
+    std::vector<std::string> m_buffer; // 系統日志缓冲队列
+    std::vector<std::string> m_app_buffer; // 業務日志缓冲队列
+    Mutex m_mutex; // 系統日志缓冲队列的互斥锁
+    Mutex m_app_mutex; // 業務日志缓冲队列的互斥锁
     AsyncLogger::s_ptr m_async_logger;
+    AsyncLogger::s_ptr m_async_app_logger;
     TimeEvent::s_ptr m_time_event;
     EventLoop* m_event_loop;
 };
