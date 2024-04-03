@@ -16,6 +16,7 @@ public:
     
 public:
     Config(const char* xml_file);
+    Config();
 
 
 public:

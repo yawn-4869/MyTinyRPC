@@ -25,8 +25,16 @@ Config* Config::GetGloabalConfig() {
 
 void Config::SetGlobalConfig(const char* xml_file) {
     if(!g_config) {
-        g_config = new Config(xml_file);
+        if(xml_file != NULL) {
+            g_config = new Config(xml_file);
+        } else {
+            g_config = new Config();
+        }
     }
+}
+
+Config::Config() {
+    m_log_level = "DEBUG";
 }
 
 Config::Config(const char* xml_file) {
@@ -63,7 +71,7 @@ Config::Config(const char* xml_file) {
     m_port = std::atoi(port_str.c_str());
     m_io_threads = std::atoi(io_threads_str.c_str());
 
-    printf("SERVER -- CONFIG port[%d], io_threads[%d]\n", m_port, m_io_threads);
+    printf("SERVER -- CONFIG PORT[%d], IO_THREADS[%d]\n", m_port, m_io_threads);
 
 }
 

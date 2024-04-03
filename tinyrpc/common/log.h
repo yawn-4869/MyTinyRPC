@@ -107,7 +107,7 @@ private:
 
 class Logger {
 public: 
-    Logger(LogLevel level);
+    Logger(LogLevel level, int type = 1);
     LogLevel getLogLevel() {
         return m_set_level;
     }
@@ -119,7 +119,7 @@ public:
 
 public:
     static Logger* getGlobalLogger();
-    static void InitGlobalLogger();
+    static void InitGlobalLogger(int type = 1);
 
 private:
     LogLevel m_set_level; // 设置的日志级别，高于日志级别才打印
@@ -131,6 +131,7 @@ private:
     AsyncLogger::s_ptr m_async_app_logger;
     TimeEvent::s_ptr m_time_event;
     EventLoop* m_event_loop;
+    int m_type{ 0 }; // 0 -- 同步日志 1 -- 异步日志
 };
 
 class LogEvent {

@@ -59,7 +59,7 @@ void test_client() {
 
 int main() {
     MyTinyRPC::Config::SetGlobalConfig("../conf/tinyrpc.xml");
-    MyTinyRPC::Logger::InitGlobalLogger();
+    MyTinyRPC::Logger::InitGlobalLogger(0);
 
     // test_connect();
     test_client();

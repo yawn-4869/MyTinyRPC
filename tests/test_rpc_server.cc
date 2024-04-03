@@ -12,9 +12,9 @@ class OrderImpl : public Order {
                       const ::makeOrderRequest* request,
                       ::makeOrderResponse* response,
                       ::google::protobuf::Closure* done) {
-    APPDEBUGLOG("now start sleep")
-    sleep(5);
-    APPDEBUGLOG("sleep end")
+    // APPDEBUGLOG("now start sleep")
+    // sleep(5);
+    // APPDEBUGLOG("sleep end")
     if (request->price() < 10) {
       response->set_ret_code(-1);
       response->set_res_info("short balance");
@@ -31,18 +31,21 @@ class OrderImpl : public Order {
   }
 };
 
-void test_tcp_server() {
-    MyTinyRPC::IPNetAddr::s_ptr local_addr = std::make_shared<MyTinyRPC::IPNetAddr>("127.0.0.1", 12345);
-    MyTinyRPC::TcpServer tcp_server(local_addr);
-    tcp_server.start();
-}
-
-int main() {
-    MyTinyRPC::Config::SetGlobalConfig("../conf/tinyrpc.xml");
+int main(int argc, char* argv[]) {
+    if(argc != 2) {
+      printf("Start rpc server error, argc != 2!\n");
+      printf("Start like this:\n");
+      printf("./test_rpc_server ../conf/tinyrpc.xml\n");
+      return 0;
+    }
+    MyTinyRPC::Config::SetGlobalConfig(argv[1]);
     MyTinyRPC::Logger::InitGlobalLogger();
     MyTinyRPC::RpcDisPatcher::GetRpcDispatcher()->registerService(std::make_shared<OrderImpl>());
 
-    test_tcp_server();
+    MyTinyRPC::IPNetAddr::s_ptr local_addr = std::make_shared<MyTinyRPC::IPNetAddr>("127.0.0.1", MyTinyRPC::Config::GetGloabalConfig()->m_port);
+    MyTinyRPC::TcpServer tcp_server(local_addr);
+    
+    tcp_server.start();
     
     return 0;
 }

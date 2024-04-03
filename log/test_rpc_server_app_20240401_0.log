@@ -1,4 +1,0 @@
-[DEBUG]	[24-04-01 22:44:37.970]	[8122:8125]	[99998888]	[tests/test_rpc_server.cc:15]	now start sleep
-[DEBUG]	[24-04-01 22:44:42.970]	[8122:8125]	[99998888]	[tests/test_rpc_server.cc:17]	sleep end
-[DEBUG]	[24-04-01 22:44:42.970]	[8122:8125]	[99998888]	[tests/test_rpc_server.cc:25]	call makeOrder success
-[DEBUG]	[24-04-01 22:45:47.209]	[8393:8396]	[99998888]	[makeOrder]	[tests/test_rpc_server.cc:15]	now start sleep

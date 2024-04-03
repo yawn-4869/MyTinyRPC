@@ -9,7 +9,7 @@
     </log>
 
     <server>
-        <port>12346</port>
+        <port>12345</port>
         <io_threads>4</io_threads>
     </server>
 </root>

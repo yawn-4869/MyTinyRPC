@@ -88,8 +88,8 @@ void test_rpc_channel() {
 }
 
 int main() {
-    MyTinyRPC::Config::SetGlobalConfig("../conf/tinyrpc.xml");
-    MyTinyRPC::Logger::InitGlobalLogger();
+    MyTinyRPC::Config::SetGlobalConfig(NULL);
+    MyTinyRPC::Logger::InitGlobalLogger(0);
 
     // test_client();
     test_rpc_channel();
