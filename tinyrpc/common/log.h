@@ -26,42 +26,42 @@ std::string formatString(const char* str, Args&&... args) {
 
 #define DEBUGLOG(str, ...) \
     if(MyTinyRPC::Logger::getGlobalLogger()->getLogLevel() && MyTinyRPC::Logger::getGlobalLogger()->getLogLevel() <= MyTinyRPC::DEBUG){ \
-    MyTinyRPC::Logger::getGlobalLogger()->pushLog((new MyTinyRPC::LogEvent(MyTinyRPC::LogLevel::DEBUG))->toString() \
+    MyTinyRPC::Logger::getGlobalLogger()->pushLog((MyTinyRPC::LogEvent(MyTinyRPC::LogLevel::DEBUG)).toString() \
     + "[" + std::string(__FILE__) + ":" + std::to_string(__LINE__) + "]\t" \
     + MyTinyRPC::formatString(str, ##__VA_ARGS__) + "\n"); \
     } \
 
 #define INFOLOG(str, ...) \
     if(MyTinyRPC::Logger::getGlobalLogger()->getLogLevel() && MyTinyRPC::Logger::getGlobalLogger()->getLogLevel() <= MyTinyRPC::INFO) { \
-    MyTinyRPC::Logger::getGlobalLogger()->pushLog((new MyTinyRPC::LogEvent(MyTinyRPC::LogLevel::INFO))->toString() \
+    MyTinyRPC::Logger::getGlobalLogger()->pushLog((MyTinyRPC::LogEvent(MyTinyRPC::LogLevel::DEBUG)).toString() \
     + "[" + std::string(__FILE__) + ":" + std::to_string(__LINE__) + "]\t" \
     + MyTinyRPC::formatString(str, ##__VA_ARGS__) + "\n"); \
     } \
 
 #define ERRORLOG(str, ...) \
     if(MyTinyRPC::Logger::getGlobalLogger()->getLogLevel() && MyTinyRPC::Logger::getGlobalLogger()->getLogLevel() <= MyTinyRPC::ERROR) { \
-    MyTinyRPC::Logger::getGlobalLogger()->pushLog((new MyTinyRPC::LogEvent(MyTinyRPC::LogLevel::ERROR))->toString() \
+    MyTinyRPC::Logger::getGlobalLogger()->pushLog((MyTinyRPC::LogEvent(MyTinyRPC::LogLevel::DEBUG)).toString() \
     + "[" + std::string(__FILE__) + ":" + std::to_string(__LINE__) + "]\t" \
     + MyTinyRPC::formatString(str, ##__VA_ARGS__) + "\n"); \
     } \
 
 #define APPDEBUGLOG(str, ...) \
     if(MyTinyRPC::Logger::getGlobalLogger()->getLogLevel() && MyTinyRPC::Logger::getGlobalLogger()->getLogLevel() <= MyTinyRPC::DEBUG){ \
-    MyTinyRPC::Logger::getGlobalLogger()->pushAppLog((new MyTinyRPC::LogEvent(MyTinyRPC::LogLevel::DEBUG))->toString() \
+    MyTinyRPC::Logger::getGlobalLogger()->pushAppLog((MyTinyRPC::LogEvent(MyTinyRPC::LogLevel::DEBUG)).toString() \
     + "[" + std::string(__FILE__) + ":" + std::to_string(__LINE__) + "]\t" \
     + MyTinyRPC::formatString(str, ##__VA_ARGS__) + "\n"); \
     } \
 
 #define APPINFOLOG(str, ...) \
     if(MyTinyRPC::Logger::getGlobalLogger()->getLogLevel() && MyTinyRPC::Logger::getGlobalLogger()->getLogLevel() <= MyTinyRPC::INFO) { \
-    MyTinyRPC::Logger::getGlobalLogger()->pushAppLog((new MyTinyRPC::LogEvent(MyTinyRPC::LogLevel::INFO))->toString() \
+    MyTinyRPC::Logger::getGlobalLogger()->pushAppLog((MyTinyRPC::LogEvent(MyTinyRPC::LogLevel::DEBUG)).toString() \
     + "[" + std::string(__FILE__) + ":" + std::to_string(__LINE__) + "]\t" \
     + MyTinyRPC::formatString(str, ##__VA_ARGS__) + "\n"); \
     } \
 
 #define APPERRORLOG(str, ...) \
     if(MyTinyRPC::Logger::getGlobalLogger()->getLogLevel() && MyTinyRPC::Logger::getGlobalLogger()->getLogLevel() <= MyTinyRPC::ERROR) { \
-    MyTinyRPC::Logger::getGlobalLogger()->pushAppLog((new MyTinyRPC::LogEvent(MyTinyRPC::LogLevel::ERROR))->toString() \
+    MyTinyRPC::Logger::getGlobalLogger()->pushAppLog((MyTinyRPC::LogEvent(MyTinyRPC::LogLevel::DEBUG)).toString() \
     + "[" + std::string(__FILE__) + ":" + std::to_string(__LINE__) + "]\t" \
     + MyTinyRPC::formatString(str, ##__VA_ARGS__) + "\n"); \
     } \

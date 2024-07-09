@@ -16,6 +16,7 @@ public:
 private:
     void init();
     void onAccept();
+    void clearClient(); // 清除Closed的连接
 
 private:
     EventLoop* m_main_event_loop; // mainReactor, 只处理连接
@@ -24,6 +25,7 @@ private:
     NetAddr::s_ptr m_local_addr; // 本地监听地址
     TcpAcceptor::s_ptr m_acceptor; // 
     FdEvent* m_listen_fd_event; // 监听事件
+    TimeEvent::s_ptr m_clear_client_event; // 定时事件, 清理关闭的客户端
 
     std::set<TcpConnection::s_ptr> m_clients; // 客户端连接, 每一个客户端绑定一个线程池中的线程
 };

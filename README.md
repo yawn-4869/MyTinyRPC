@@ -332,3 +332,12 @@ connect -> (request) -> encode -> write -> read -> decode -> (response)
 继承自google::protobuf::RpcController类
 
 在rpc调用过程中可以通过controller获取rpc调用的某些信息, 方便进行错误处理和debug
+
+#### 后续优化：
+1. 本项目所有的异步调用通过回调函数实现，会降低代码可读性，增加逻辑的复杂性
+
+优化策略：可以考虑利用协程解决这个问题
+
+2. 由一个IO线程负责一个客户端连接，可以考虑使用任务队列存储连接
+
+3. CALLRPC需要传送地址, 可以考虑使用服务名+redis等封装一个查询地址的功能, 使得CALLRPC不需要传入地址

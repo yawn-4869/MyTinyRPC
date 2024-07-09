@@ -44,6 +44,9 @@ public:
     const TcpState getState() {
         return m_state;
     }
+    int getFd() {
+        return m_fd;
+    }
     void setConnectionType(const TcpConnectionType& type) {
         // 设置连接类别
         m_connection_type = type;
